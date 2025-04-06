@@ -1,17 +1,24 @@
-import Navbar from "./components/Navbar"
-import HeroSection from "./components/HeroSection"
-import Footer from "./components/Footer"
-import HowItWorksSection from "./components/HowItWorksSection"
-function App() {
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import MainLayout from './components/MainLayout';
 
+import Home from './pages/Home';
+
+
+function App() {
   return (
-    <>
-    <Navbar/>
-    <HeroSection/>
-    <HowItWorksSection/>
-    <Footer/>
-    </>
-  )
+    <Router>
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <MainLayout>
+              <Home />
+            </MainLayout>
+          }
+        />
+      </Routes>
+    </Router>
+  );
 }
 
-export default App
+export default App;
