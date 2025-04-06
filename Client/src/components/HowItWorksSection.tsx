@@ -3,7 +3,7 @@ import { FaPen, FaVoteYea, FaMapMarkerAlt, FaBell } from 'react-icons/fa';
 
 const HowItWorksSection: React.FC = () => {
   return (
-    <section className="bg-gradient-to-b from-transparent to-[#fcede3] py-16">
+    <section className="bg-gradient-to-b from-transparent to-[#f5f4ea] py-16">
       <div className="max-w-7xl mx-auto px-4 text-center">
         <h2 className="text-4xl md:text-5xl font-bold font-serif mb-16">
           How It Works
