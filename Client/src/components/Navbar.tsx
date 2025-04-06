@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { ChevronDown, Menu, X } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [brandDropdownOpen, setBrandDropdownOpen] = useState(false);
   const [creatorDropdownOpen, setCreatorDropdownOpen] = useState(false);
-  const [loginDropdownOpen, setLoginDropdownOpen] = useState(false);
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
@@ -23,7 +23,7 @@ const Navbar: React.FC = () => {
 
         {/* Desktop Navigation */}
         <div className="hidden md:flex items-center space-x-8">
-        <a href="#" className="text-gray-700 hover:text-gray-900 transition-colors">Home</a>
+        <Link to="/" className="text-gray-700 hover:text-gray-900 transition-colors">Home</Link>
           <div className="relative">
             <button
               className="flex items-center text-gray-700 hover:text-gray-900 transition-colors"
@@ -58,10 +58,10 @@ const Navbar: React.FC = () => {
 
         {/* Right Side Navigation */}
         <div className="hidden md:flex items-center space-x-4">
-          <a href="#" className="text-gray-700 hover:text-gray-900 transition-colors">About</a>
+          <Link to="/aboutus" className="text-gray-700 hover:text-gray-900 transition-colors">About</Link>
           <a href="#" className="text-gray-700 hover:text-gray-900 transition-colors">Contact Us</a>
 
-          <a href="" className='text-gray-700 hover:text-gray-900 transition-colors'>Login</a>
+          <Link to="/login" className='text-gray-700 hover:text-gray-900 transition-colors'>Login</Link>
 
           <a href="#" className="bg-gray-800 text-white px-4 py-2 rounded-md flex items-center hover:bg-gray-700 transition-colors">
             Report an issue →
