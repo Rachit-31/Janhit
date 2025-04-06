@@ -1,5 +1,5 @@
 import React from 'react';
-
+import { Link } from 'react-router-dom';
 const Signup: React.FC = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-white to-[#f5f4ea] px-4">
@@ -44,9 +44,9 @@ const Signup: React.FC = () => {
 
         <p className="text-center text-sm text-gray-600 mt-4">
           Already have an account?{' '}
-          <a href="/login" className="text-gray-900 font-semibold hover:underline">
+          <Link to="/login" className="text-gray-900 font-semibold hover:underline">
             Log in
-          </a>
+          </Link>
         </p>
       </div>
     </div>
