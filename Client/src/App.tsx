@@ -1,8 +1,12 @@
-
+import Navbar from "./components/Navbar"
+import HeroSection from "./components/HeroSection"
 function App() {
 
   return (
-    <p className="text-3xl font-bold underline">hello</p>
+    <>
+    <Navbar/>
+    <HeroSection/>
+    </>
   )
 }
 
