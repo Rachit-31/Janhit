@@ -9,4 +9,8 @@ app.use(express.urlencoded({extended:true}));
 app.use(express.static("public"));
 
 
+import userRouter from "./routes/userRoute.js"
+
+app.use("/api/v1/users", userRouter);
+
 export default app;
