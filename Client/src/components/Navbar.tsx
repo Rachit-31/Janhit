@@ -17,7 +17,7 @@ const Navbar: React.FC = () => {
         {/* Logo */}
         <div className="flex items-center">
           <a href="/" className="text-black font-bold text-xl">
-            passionroot
+            Janhit
           </a>
         </div>
 
@@ -29,7 +29,7 @@ const Navbar: React.FC = () => {
               className="flex items-center text-gray-700 hover:text-gray-900 transition-colors"
               onClick={() => setBrandDropdownOpen(!brandDropdownOpen)}
             >
-              For Brands <ChevronDown className={`ml-1 h-4 w-4 transition-transform duration-200 ${brandDropdownOpen ? 'rotate-180' : ''}`} />
+              My Tasks <ChevronDown className={`ml-1 h-4 w-4 transition-transform duration-200 ${brandDropdownOpen ? 'rotate-180' : ''}`} />
             </button>
             {brandDropdownOpen && (
               <div className="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10 animate-fadeIn transition-all">
@@ -47,8 +47,12 @@ const Navbar: React.FC = () => {
             </button>
             {creatorDropdownOpen && (
               <div className="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10 animate-fadeIn transition-all">
-                <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Option 1</a>
-                <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Option 2</a>
+                <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Municipal Officer</a>
+                <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">City Engineer</a>
+                <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Sanitation Department</a>
+                <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Road & Transport Authority</a>
+                <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Water Supply Officer</a>
+                <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Public Safety & Surveillance</a>
               </div>
             )}
           </div>
