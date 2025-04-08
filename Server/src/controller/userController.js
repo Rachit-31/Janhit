@@ -34,3 +34,40 @@ export const signupUser = async (req, res) => {
       res.status(500).json({ message: "Signup error", error: err.message });
     }
   };
+
+export const loginUser = async(req, res)=>{
+    try {
+        const {email, password}= req.body;
+        const user = await User.findOne({email});
+
+        if(!user){
+            return res.status(400).json({message: "User does not exists"});
+        }
+        const isMatch = await bcrypt.compare(password, user.password);
+        if(!isMatch){
+            return res.status(400).json({message:"Invalid credentials"})
+        }
+        const token = createToken(user._id);
+        res
+        .cookie("accessToken", token, { httpOnly: true, secure: true, sameSite: "strict" })
+        .status(200)
+        .json({message: "Login Successful", user});
+    } catch (error) {
+        res.status(500).json({ message: "Login error", error: err.message });
+    }
+}
+
+export const logout = async (req, res) => {
+    try {
+      res
+        .clearCookie("accessToken", {
+          httpOnly: true,
+          secure: true,
+          sameSite: "strict"
+        })
+        .status(200)
+        .json({ message: "Logged out successfully" });
+    } catch (err) {
+      res.status(500).json({ message: "Logout failed", error: err.message });
+    }
+  };
