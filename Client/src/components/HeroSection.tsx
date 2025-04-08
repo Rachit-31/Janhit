@@ -1,5 +1,5 @@
 import React from 'react';
-
+import { Link } from 'react-router-dom';
 const HeroSection: React.FC = () => {
     return (
         <section className="py-16 md:py-24">
@@ -22,12 +22,12 @@ const HeroSection: React.FC = () => {
                 </div>
 
                 <div className="flex flex-col md:flex-row gap-4 justify-center mb-12">
-                    <a
-                        href="#"
+                    <Link
+                        to="/map"
                         className="bg-gray-900 text-white px-8 py-3 rounded-md flex items-center justify-center hover:bg-gray-800 transition duration-300"
                     >
                         Report an issue <span className="ml-2">→</span>
-                    </a>
+                    </Link>
                     <a
                         href="#"
                         className="border border-gray-500 text-gray-800 px-8 py-3 rounded-md hover:bg-gray-100 transition duration-300 font-bold"

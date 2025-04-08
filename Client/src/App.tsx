@@ -4,6 +4,7 @@ import Login from './pages/Login';
 import Signup from './pages/Signup';
 import AboutUs from './pages/AboutUs';
 import Home from './pages/Home';
+import MapPage from './pages/MapPage';
 
 
 function App() {
@@ -34,7 +35,15 @@ function App() {
             </MainLayout>
           }
         />
-        <Route/>
+
+        <Route
+          path="/map"
+          element={
+            <MainLayout>
+              <MapPage />
+            </MainLayout>
+          }
+        />
       </Routes>
     </Router>
   );

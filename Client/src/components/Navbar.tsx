@@ -63,9 +63,9 @@ const Navbar: React.FC = () => {
 
           <Link to="/login" className='text-gray-700 hover:text-gray-900 transition-colors'>Login</Link>
 
-          <a href="#" className="bg-gray-800 text-white px-4 py-2 rounded-md flex items-center hover:bg-gray-700 transition-colors">
+          <Link to="/map" className="bg-gray-800 text-white px-4 py-2 rounded-md flex items-center hover:bg-gray-700 transition-colors">
             Report an issue →
-          </a>
+          </Link>
         </div>
 
         {/* Mobile menu button */}
@@ -110,13 +110,13 @@ const Navbar: React.FC = () => {
               )}
             </div>
 
-            <a href="#" className="block text-gray-700 hover:text-gray-900">About</a>
+            <Link to="/aboutus" className="block text-gray-700 hover:text-gray-900">About</Link>
             <a href="#" className="block text-gray-700 hover:text-gray-900">Careers</a>
 
 
-            <a href="#" className="block w-full bg-gray-800 text-white px-4 py-2 rounded-md text-center hover:bg-gray-700 transition-colors">
+            <Link to="/map" className="block w-full bg-gray-800 text-white px-4 py-2 rounded-md text-center hover:bg-gray-700 transition-colors">
                 Report an issue →
-            </a>
+            </Link>
           </div>
         </div>
       )}
