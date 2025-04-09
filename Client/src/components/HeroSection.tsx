@@ -40,12 +40,13 @@ const HeroSection: React.FC = () => {
                 <div className="relative w-full aspect-video max-w-4xl mx-auto rounded-lg overflow-hidden shadow-lg">
                     <iframe
                         className="w-full h-full"
-                        src="https://www.youtube.com/embed/yimgytqnVec"
+                        src="https://www.youtube.com/embed/3GVlKTg0Xy0"
                         title="How It Works"
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                         allowFullScreen
                     ></iframe>
                 </div>
+
 
                 <p className="text-gray-500 mt-6 text-sm">
                     वीडियो देखें और समझें — कैसे आप अपने शहर की आवाज़ बन सकते हैं।
