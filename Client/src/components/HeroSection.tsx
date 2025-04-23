@@ -6,7 +6,7 @@ const HeroSection: React.FC = () => {
             <div className="max-w-5xl mx-auto px-4 text-center">
                 <div className="mb-4">
                     <p className="text-gray-600 uppercase tracking-wide text-sm md:text-base">
-                        THE PLATFORM FOR LOCAL CIVIC ENGAGEMENT
+                        THE PLATFORM FOR LOCAL CIVIC M
                     </p>
                 </div>
 
