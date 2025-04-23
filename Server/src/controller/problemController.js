@@ -1,6 +1,7 @@
 import ProblemReport from "../models/problemModel.js";
 import Vote from "../models/voteModel.js";
 import User from "../models/userModel.js";
+import Official from "../models/officialModel.js";
 import mongoose from "mongoose";
 
 export const createProblem = async (req, res) => {
@@ -104,5 +105,49 @@ export const rateProblem = async (req, res) => {
     } catch (error) {
         console.error("Error rating problem:", error);
         res.status(500).json({ success: false, message: "Server Error" });
+    }
+}
+
+
+export const assignProblem = async(req, res)=>{
+    try {
+        const problemId = req.params.problemId;
+        const problem = await ProblemReport.findById(problemId);
+
+        if(!problem){
+            return res.status(404).json({success: false, message:"Problem not found"});
+        }
+
+        if (problem.voteCount < 5) {
+            return res.status(400).json({ success: false, message: "Votes are less than 5. Not eligible for assignment." });
+        }
+
+        if (problem.assignedTo) {
+            return res.status(400).json({ success: false, message: "Problem is already assigned" });
+        }
+
+        const official = await Official.findOne({ department: problem.category });
+
+        if (!official) {
+            return res.status(404).json({ success: false, message: "No official found for this department" });
+        }
+
+        problem.assignedTo = official._id;
+        problem.status = "assigned";
+        await problem.save();
+
+        official.assignedProblems.push(problemId);
+        await official.save();
+
+
+        res.status(200).json({
+            success: true,
+            message: `Problem assigned to official of ${problem.category} department`,
+            problem
+        });
+
+    } catch (error) {
+        console.error("Error assigning problem:", error);
+        res.status(500).json({ success: false, message: "Server error" });
     }
 }

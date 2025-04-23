@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { verifyJWT } from "../middlewares/authMiddleware.js";
 import { loginUser, logout, signupUser } from "../controller/userController.js";
-import { createProblem, rateProblem } from "../controller/problemController.js";
+import { assignProblem, createProblem, rateProblem } from "../controller/problemController.js";
 import { signupOfficial } from "../controller/officialController.js";
 
 
@@ -16,6 +16,7 @@ router.route("/logout").post(verifyJWT, logout);
 // problem
 router.route("/createProblem/:userId").post(verifyJWT, createProblem);
 router.route("/problems/:problemId/rate/:userId").post(verifyJWT, rateProblem);
+router.route("/assign/:problemId").post(assignProblem)
 
 
 // official
