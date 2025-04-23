@@ -2,6 +2,7 @@ import ProblemReport from "../models/problemModel.js";
 import Vote from "../models/voteModel.js";
 import User from "../models/userModel.js";
 import Official from "../models/officialModel.js";
+import Comment from "../models/commentModel.js";
 import mongoose from "mongoose";
 
 export const createProblem = async (req, res) => {
@@ -89,7 +90,7 @@ export const rateProblem = async (req, res) => {
         if (allVotes.length > 0) {
             const totalRating = allVotes.reduce((sum, vote) => sum + vote.rating, 0);
             const avgRating = totalRating / allVotes.length;
-            
+
             // console.log(avgRating)
             await ProblemReport.findByIdAndUpdate(problemId, {
                 averageRating: Number(avgRating.toFixed(2)),
@@ -109,13 +110,13 @@ export const rateProblem = async (req, res) => {
 }
 
 
-export const assignProblem = async(req, res)=>{
+export const assignProblem = async (req, res) => {
     try {
         const problemId = req.params.problemId;
         const problem = await ProblemReport.findById(problemId);
 
-        if(!problem){
-            return res.status(404).json({success: false, message:"Problem not found"});
+        if (!problem) {
+            return res.status(404).json({ success: false, message: "Problem not found" });
         }
 
         if (problem.voteCount < 5) {
@@ -151,3 +152,72 @@ export const assignProblem = async(req, res)=>{
         res.status(500).json({ success: false, message: "Server error" });
     }
 }
+
+
+export const deleteProblem = async (req, res) => {
+    try {
+        const { problemId, userId } = req.params;
+
+        const problem = await ProblemReport.findById(problemId);
+
+        if (!problem) {
+            return res.status(404).json({ success: false, message: "No problem exists" });
+        }
+
+        if (problem.createdBy.toString() !== userId) {
+            return res.status(403).json({ success: false, message: "Unauthorized: You can only delete your own problem" });
+        }
+
+        if (problem.assignedTo) {
+            await Official.findByIdAndUpdate(problem.assignedTo, {
+                $pull: { assignedProblems: problemId }
+            });
+        }
+
+        await ProblemReport.findByIdAndDelete(problemId);
+
+        await Vote.deleteMany({ problem: problemId });
+        await Comment.deleteMany({ toProblem: problemId });
+
+        res.status(200).json({ success: true, message: "Problem deleted successfully" });
+    } catch (error) {
+        console.error("Error deleting problem:", error);
+        res.status(500).json({ success: false, message: "Server Error" });
+    }
+};
+
+
+export const getAllProblems = async (req, res) => {
+    try {
+        const problems = await ProblemReport.find()
+
+        res.status(200).json({
+            success: true,
+            count: problems.length,
+            problems,
+        });
+    } catch (error) {
+        console.error("Error fetching all problems:", error);
+        res.status(500).json({ success: false, message: "Server Error" });
+    }
+};
+
+
+
+export const getOfficialProblems = async (req, res) => {
+    try {
+        const officialId = req.params;
+
+        const problems = await ProblemReport.find({ assignedTo: officialId })
+
+
+        res.status(200).json({
+            success: true,
+            count: problems.length,
+            problems,
+        });
+    } catch (error) {
+        console.error("Error fetching official's problems:", error);
+        res.status(500).json({ success: false, message: "Server Error" });
+    }
+};

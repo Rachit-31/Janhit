@@ -37,10 +37,10 @@ const problemReportSchema = new mongoose.Schema({
     ref: 'User'
   },
 
-  votes: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Vote'
-  }],
+  // votes: [{
+  //   type: mongoose.Schema.Types.ObjectId,
+  //   ref: 'Vote'
+  // }],
 
   assignedTo: {
     type: mongoose.Schema.Types.ObjectId,
