@@ -2,7 +2,7 @@ import { Router } from "express";
 import { verifyJWT } from "../middlewares/authMiddleware.js";
 import { addCommentToProblem, deleteComment, loginUser, logout, signupUser } from "../controller/userController.js";
 import { assignProblem, createProblem, deleteProblem, getAllProblems, getOfficialProblems, rateProblem } from "../controller/problemController.js";
-import { signupOfficial } from "../controller/officialController.js";
+import { loginOfficial, signupOfficial } from "../controller/officialController.js";
 
 
 
@@ -26,6 +26,7 @@ router.route("/getAllproblems").get(getAllProblems)
 
 // official
 router.route("/signupOfficial").post(signupOfficial)
+router.route("/loginOfficial").post(loginOfficial)
 router.route("/getProblemOfficial").get(verifyJWT, getOfficialProblems);
 
 export default router;
