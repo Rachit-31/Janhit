@@ -11,7 +11,8 @@ import 'leaflet/dist/leaflet.css';
 import iconUrl from 'leaflet/dist/images/marker-icon.png';
 import iconShadowUrl from 'leaflet/dist/images/marker-shadow.png';
 
-// Issue marker icon
+// Note: To change the color of icons based on the severity
+
 const issueIcon = new L.Icon({
     iconUrl,
     shadowUrl: iconShadowUrl,
@@ -19,7 +20,6 @@ const issueIcon = new L.Icon({
     iconAnchor: [12, 41],
 });
 
-// Live location marker icon
 const liveLocationIcon = new L.Icon({
     iconUrl: 'https://cdn-icons-png.flaticon.com/512/64/64113.png',
     iconSize: [30, 30],
@@ -30,78 +30,57 @@ interface Issue {
     id: number;
     position: [number, number];
     description: string;
-    votes: number;
-    voted: boolean;
+    severity: number;
 }
+
+const DangerRating: React.FC<{ rating: number; onRate: (rating: number) => void }> = ({ rating, onRate }) => (
+    <div className="flex space-x-1 cursor-pointer text-yellow-400 text-3xl">
+        {[1, 2, 3, 4, 5].map((danger) => (
+            <span key={danger} onClick={() => onRate(danger)} className='w-[100px] h-[40px]'>
+                {danger <= rating ? <div className='text-xl'>⚠️</div> : <div className='text-2xl'>⚠</div>}
+            </span>
+        ))}
+    </div>
+);
 
 const MapPage: React.FC = () => {
     const [position, setPosition] = useState<[number, number] | null>(null);
     const [issues, setIssues] = useState<Issue[]>([
-        // {
-        //     id: 1,
-        //     position: [31.469143, 76.268085],
-        //     description: 'Pothole near Connaught Place',
-        //     votes: 12,
-        //     voted: false,
-        // },
-        // {
-        //     id: 2,
-        //     position: [31.485406, 76.228254],
-        //     description: 'Broken street light in Karol Bagh',
-        //     votes: 4,
-        //     voted: false,
-        // },
         {
             id: 1,
             position: [31.469143, 76.268085],
             description: 'Pothole near Connaught Place',
-            votes: 12,
-            voted: false,
-          },
-          {
+            severity: 3,
+        },
+        {
             id: 2,
             position: [31.485406, 76.228254],
             description: 'Broken street light in Karol Bagh',
-            votes: 4,
-            voted: false,
-          },
-          {
-              id: 3,
-              position: [31.476361, 76.272485],
-              description: 'Broken street light in Karol Bagh',
-              votes: 10,
-              voted: false,
-          },
+            severity: 2,
+        },
+        {
+            id: 3,
+            position: [31.476361, 76.272485],
+            description: 'Overflowing Garbage Bin',
+            severity: 4,
+        },
     ]);
 
-    const [sortBy, setSortBy] = useState<'votes' | 'distance'>('votes');
+    const [sortBy, setSortBy] = useState<'severity' | 'distance'>('severity');
     const [newIssuePos, setNewIssuePos] = useState<[number, number] | null>(null);
     const [showModal, setShowModal] = useState(false);
     const [newIssueDesc, setNewIssueDesc] = useState('');
+    const [newSeverity, setNewSeverity] = useState(1);
 
     useEffect(() => {
         navigator.geolocation.getCurrentPosition(
             (pos) => setPosition([pos.coords.latitude, pos.coords.longitude]),
             (err) => {
                 console.error(err);
-                setPosition([28.6139, 77.2090]); // fallback to Delhi
+                setPosition([28.6139, 77.2090]);
             }
         );
     }, []);
-
-    const handleVoteToggle = (id: number) => {
-        setIssues((prev) =>
-            prev.map((issue) =>
-                issue.id === id
-                    ? {
-                        ...issue,
-                        votes: issue.voted ? issue.votes - 1 : issue.votes + 1,
-                        voted: !issue.voted,
-                    }
-                    : issue
-            )
-        );
-    };
 
     const AddIssueOnClick = () => {
         useMapEvents({
@@ -121,18 +100,18 @@ const MapPage: React.FC = () => {
                 id: Date.now(),
                 position: newIssuePos,
                 description: newIssueDesc,
-                votes: 0,
-                voted: false,
+                severity: newSeverity,
             },
         ]);
         setNewIssueDesc('');
+        setNewSeverity(1);
         setShowModal(false);
         setNewIssuePos(null);
     };
 
     const getDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
         const toRad = (x: number) => (x * Math.PI) / 180;
-        const R = 6371; // km
+        const R = 6371;
         const dLat = toRad(lat2 - lat1);
         const dLon = toRad(lon2 - lon1);
         const a =
@@ -142,7 +121,7 @@ const MapPage: React.FC = () => {
     };
 
     const sortedIssues = [...issues].sort((a, b) => {
-        if (sortBy === 'votes') return b.votes - a.votes;
+        if (sortBy === 'severity') return b.severity - a.severity;
         if (position) {
             const distA = getDistance(position[0], position[1], a.position[0], a.position[1]);
             const distB = getDistance(position[0], position[1], b.position[0], b.position[1]);
@@ -174,31 +153,34 @@ const MapPage: React.FC = () => {
                         {issues.map((issue) => (
                             <Marker key={issue.id} position={issue.position} icon={issueIcon}>
                                 <Popup>
-                                    <div className="text-sm">
+                                    <div className="text-lg">
                                         <p className="font-semibold">{issue.description}</p>
-                                        <p>Votes: {issue.votes}</p>
-                                        <button
-                                            onClick={() => handleVoteToggle(issue.id)}
-                                            className="mt-2 px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
-                                        >
-                                            {issue.voted ? 'Remove Vote' : 'Vote'}
-                                        </button>
+                                        <p className="mt-1 text-gray-600">Severity:</p>
+                                        <DangerRating
+                                            rating={issue.severity}
+                                            onRate={(rating) => {
+                                                setIssues((prev) =>
+                                                    prev.map((i) =>
+                                                        i.id === issue.id ? { ...i, severity: rating } : i
+                                                    )
+                                                );
+                                            }}
+                                        />
                                     </div>
                                 </Popup>
                             </Marker>
                         ))}
                     </MapContainer>
 
-                    {/* Sort & Table */}
                     <div className="max-w-4xl mx-auto">
                         <div className="flex justify-end mb-4">
                             <label className="text-sm font-medium mr-2">Sort by:</label>
                             <select
                                 className="border border-gray-300 rounded px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 value={sortBy}
-                                onChange={(e) => setSortBy(e.target.value as 'votes' | 'distance')}
+                                onChange={(e) => setSortBy(e.target.value as 'severity' | 'distance')}
                             >
-                                <option value="votes">Votes</option>
+                                <option value="severity">Severity</option>
                                 <option value="distance">Distance</option>
                             </select>
                         </div>
@@ -208,7 +190,7 @@ const MapPage: React.FC = () => {
                                 <thead className="bg-gray-200 uppercase text-xs tracking-wider text-gray-600">
                                     <tr>
                                         <th className="px-6 py-3">Description</th>
-                                        <th className="px-6 py-3">Votes</th>
+                                        <th className="px-6 py-3">Severity</th>
                                         <th className="px-6 py-3">Distance (km)</th>
                                     </tr>
                                 </thead>
@@ -219,12 +201,9 @@ const MapPage: React.FC = () => {
                                             : 0;
 
                                         return (
-                                            <tr
-                                                key={issue.id}
-                                                className="hover:bg-blue-50 transition-colors duration-150"
-                                            >
+                                            <tr key={issue.id} className="hover:bg-blue-50 transition-colors duration-150">
                                                 <td className="px-6 py-4">{issue.description}</td>
-                                                <td className="px-6 py-4">{issue.votes}</td>
+                                                <td className="px-6 py-4">{issue.severity}</td>
                                                 <td className="px-6 py-4">{dist.toFixed(2)}</td>
                                             </tr>
                                         );
@@ -233,13 +212,11 @@ const MapPage: React.FC = () => {
                             </table>
                         </div>
                     </div>
-
                 </>
             ) : (
                 <p className="text-center text-gray-600">Fetching your location...</p>
             )}
 
-            {/* Modal for new issue */}
             {showModal && (
                 <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-[9999]">
                     <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
@@ -251,6 +228,10 @@ const MapPage: React.FC = () => {
                             onChange={(e) => setNewIssueDesc(e.target.value)}
                             className="w-full border rounded px-3 py-2 mb-4"
                         />
+                        <div className="mb-4">
+                            <p className="mb-1 font-medium">Rate Severity:</p>
+                            <DangerRating rating={newSeverity} onRate={setNewSeverity} />
+                        </div>
                         <div className="flex justify-end space-x-2">
                             <button
                                 onClick={() => setShowModal(false)}
