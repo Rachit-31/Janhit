@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { ChevronDown, Menu, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import userImg from "../assets/userImg.jpg"
+import userImg from "../assets/userImgM.jpg"
 
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -65,13 +65,13 @@ const Navbar: React.FC = () => {
                   'Water Supply Officer',
                   'Public Safety & Surveillance',
                 ].map((role) => (
-                  <a
+                  <Link
                     key={role}
-                    href="#"
+                    to={`/officials?role=${encodeURIComponent(role)}`}
                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                   >
                     {role}
-                  </a>
+                  </Link>
                 ))}
               </div>
             )}
@@ -150,7 +150,7 @@ const Navbar: React.FC = () => {
                       href="#"
                       className="block py-1 text-gray-700 hover:text-gray-900"
                     >
-                      {role}
+                      <Link to='/dashboardOfficial'>{role}</Link>
                     </a>
                   ))}
                 </div>

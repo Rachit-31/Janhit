@@ -1,5 +1,5 @@
 import React from 'react';
-import userImg from '../assets/userImg.jpg'; // adjust to your actual image path
+import userImg from '../assets/userImgM.jpg'; // adjust to your actual image path
 
 type Issue = {
   id: number;
@@ -25,7 +25,7 @@ const DashboardUser: React.FC = () => {
   const { name, age, position, profileImage, issues } = mockUser;
 
   return (
-    <div className="min-h-screen bg-[#f5f5dc] text-black p-8">
+    <div className="min-h-screen bg-[#fbfbf3] text-black p-8">
       {/* Profile Section */}
       <div className="flex flex-col md:flex-row items-center gap-6 bg-white shadow-md rounded-2xl p-6 mb-10">
         <img src={profileImage} alt="User" className="w-28 h-28 rounded-full border border-black object-cover" />
