@@ -13,7 +13,6 @@ const problemReportSchema = new mongoose.Schema({
     type: String, // e.g., "Road", "Sewage", "Garbage", etc.
     required: true
   },
-  images: [String], 
 
   location: {
     type: {
@@ -48,7 +47,14 @@ const problemReportSchema = new mongoose.Schema({
     ref: 'Official',
     default: null
   },
-
+  voteCount: {
+    type: Number,
+    default: 0
+  },  
+  averageRating: {
+    type: Number,
+    default: 0
+  },
   createdAt: {
     type: Date,
     default: Date.now

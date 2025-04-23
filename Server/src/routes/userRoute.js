@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { verifyJWT } from "../middlewares/authMiddleware.js";
 import { loginUser, logout, signupUser } from "../controller/userController.js";
+import { createProblem } from "../controller/problemController.js";
 
 
 
@@ -11,6 +12,7 @@ router.route("/signupUser").post(signupUser);
 router.route("/loginUser").post(loginUser);
 router.route("/logout").post(verifyJWT, logout);
 
-
+// problem
+router.route("/createProblem/:userId").post(verifyJWT, createProblem);
 
 export default router;
