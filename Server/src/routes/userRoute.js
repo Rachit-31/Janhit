@@ -19,7 +19,7 @@ router.route("/comments/:commentId/:userId").delete(verifyJWT, deleteComment)
 router.route("/createProblem/:userId").post(verifyJWT, createProblem);
 router.route("/problems/:problemId/rate/:userId").post(verifyJWT, rateProblem);
 router.route("/assign/:problemId").post(assignProblem)
-router.route("/problem/:problemId/user/:userId").delete(deleteProblem)
+router.route("/problem/:problemId/user/:userId").delete(verifyJWT, deleteProblem)
 router.route("/getAllproblems").get(getAllProblems)
 
 
