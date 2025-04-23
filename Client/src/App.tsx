@@ -77,10 +77,10 @@ function App() {
         />
 
         <Route
-          path="/officials"
+          path="/officialsDashboard"
           element={
             <MainLayout>
-              <Officials />
+              <DashboardOfficer />
             </MainLayout>
           }
         />

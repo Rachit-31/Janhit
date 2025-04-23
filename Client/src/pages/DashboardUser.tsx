@@ -1,5 +1,5 @@
 import React from 'react';
-import userImg from '../assets/userImg.jpg'; // adjust to your actual image path
+import userImg from '../assets/userImgM.jpg'; // adjust to your actual image path
 
 type Issue = {
   id: number;
