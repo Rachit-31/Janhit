@@ -6,6 +6,7 @@ import AboutUs from './pages/AboutUs';
 import Home from './pages/Home';
 import MapPage from './pages/MapPage';
 import ContactUs from './pages/ContactUs';
+import DashboardUser from './pages/DashboardUser';
 
 
 function App() {
@@ -51,6 +52,15 @@ function App() {
           element={
             <MainLayout>
               <ContactUs />
+            </MainLayout>
+          }
+        />
+
+        <Route
+          path="/dashboardUser"
+          element={
+            <MainLayout>
+              <DashboardUser />
             </MainLayout>
           }
         />

@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { ChevronDown, Menu, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import userImg from "../assets/userImg.jpg"
 
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [brandDropdownOpen, setBrandDropdownOpen] = useState(false);
   const [creatorDropdownOpen, setCreatorDropdownOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(true);
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
@@ -80,7 +82,17 @@ const Navbar: React.FC = () => {
         <div className="hidden md:flex items-center space-x-4">
           <Link to="/aboutus" className="text-gray-700 hover:text-gray-900 transition-colors">About</Link>
           <Link to="/contactUs" className="text-gray-700 hover:text-gray-900 transition-colors">Contact Us</Link>
-          <Link to="/login" className="text-gray-700 hover:text-gray-900 transition-colors">Login</Link>
+          {
+            isLoggedIn 
+            ? <Link to="/dashboardUser" className="inline-block">
+                <img
+                  src={userImg}
+                  alt="User"
+                  className="rounded-full border border-black size-12"
+                />
+              </Link>
+            : <Link to="/login" className="text-gray-700 hover:text-gray-900 transition-colors">Login</Link>
+          }
           <Link to="/map" className="bg-gray-800 text-white px-4 py-2 rounded-md flex items-center hover:bg-gray-700 transition-colors">
             Report an issue →
           </Link>
