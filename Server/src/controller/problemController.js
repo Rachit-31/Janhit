@@ -1,18 +1,18 @@
 import ProblemReport from "../models/problemModel.js";
 import Vote from "../models/voteModel.js";
 import User from "../models/userModel.js";
+import mongoose from "mongoose";
 
-export const createProblem = async(req, res)=>{
+export const createProblem = async (req, res) => {
     try {
         const { title, description, category, coordinates, rating } = req.body;
         const userId = req.params.userId;
 
-        console.log(req.body);
-        if(rating <1 || rating>5){
-            return res.status(400).json({success: false, message:"Rating must be between 1 and 5"})
+        if (rating < 1 || rating > 5) {
+            return res.status(400).json({ success: false, message: "Rating must be between 1 and 5" })
         }
 
-        const voteCount= rating>= 3?1: 0;
+        const voteCount = rating >= 3 ? 1 : 0;
 
         const newProblem = await ProblemReport.create({
             title,
@@ -41,6 +41,68 @@ export const createProblem = async(req, res)=>{
 
     } catch (error) {
         console.error("Error creating problem report:", error);
+        res.status(500).json({ success: false, message: "Server Error" });
+    }
+}
+
+
+export const rateProblem = async (req, res) => {
+    try {
+        const userId = req.params.userId;
+        const problemId = req.params.problemId;
+
+        const { rating } = req.body;
+
+
+        // console.log(userId)
+        // console.log(problemId)
+
+        if (!mongoose.Types.ObjectId.isValid(problemId) || !mongoose.Types.ObjectId.isValid(userId)) {
+            return res.status(400).json({ success: false, message: "Invalid IDs" });
+        }
+
+        if (rating < 1 || rating > 5) {
+            return res.status(400).json({ success: false, message: "Rating must be between 1 and 5" });
+        }
+
+        const alreadyRated = await Vote.findOne({ user: userId, problem: problemId });
+
+        if (alreadyRated) {
+            return res.status(400).json({ success: false, message: "You already rated this problem" });
+        }
+
+        await Vote.create({
+            user: userId,
+            problem: problemId,
+            rating,
+        });
+
+        if (rating >= 3) {
+            await ProblemReport.findByIdAndUpdate(problemId, {
+                $inc: { voteCount: 1 },
+            });
+        }
+
+        const allVotes = await Vote.find({ problem: problemId });
+
+        if (allVotes.length > 0) {
+            const totalRating = allVotes.reduce((sum, vote) => sum + vote.rating, 0);
+            const avgRating = totalRating / allVotes.length;
+            
+            // console.log(avgRating)
+            await ProblemReport.findByIdAndUpdate(problemId, {
+                averageRating: Number(avgRating.toFixed(2)),
+            });
+        }
+
+
+        res.status(200).json({
+            success: true,
+            message: "Rating submitted successfully",
+        });
+
+    } catch (error) {
+        console.error("Error rating problem:", error);
         res.status(500).json({ success: false, message: "Server Error" });
     }
 }
