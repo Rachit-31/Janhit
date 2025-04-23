@@ -154,20 +154,20 @@ const Officials: React.FC = () => {
       {/* Officials Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
         {roleData.officials.map((official) => (
-          <Link
-            to={`/officials/${official.id}`}
-            key={official.id}
-            className="bg-white p-6 rounded-2xl border border-gray-200 shadow-md hover:shadow-xl hover:-translate-y-1 transform transition duration-300 ease-in-out"
+            <Link
+                to={`/officialsDashboard`}
+                key={official.id}
+                className="bg-white p-6 rounded-2xl border border-gray-200 shadow-md hover:shadow-xl hover:-translate-y-1 transform transition duration-300 ease-in-out"
             >
-            <div className="flex flex-col items-center text-center">
-                <img
-                src={official.image}
-                alt={official.name}
-                className="w-24 h-24 object-cover rounded-full mb-4 border-2 border-black"
-                />
-                <h2 className="text-xl font-semibold text-gray-900">{official.name}</h2>
-                <p className="text-sm text-gray-600 mt-1">{official.contact}</p>
-            </div>
+                <div className="flex flex-col items-center text-center">
+                    <img
+                    src={official.image}
+                    alt={official.name}
+                    className="w-24 h-24 object-cover rounded-full mb-4 border-2 border-black"
+                    />
+                    <h2 className="text-xl font-semibold text-gray-900">{official.name}</h2>
+                    <p className="text-sm text-gray-600 mt-1">{official.contact}</p>
+                </div>
             </Link>
         ))}
       </div>
