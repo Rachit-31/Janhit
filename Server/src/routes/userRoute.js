@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { verifyJWT } from "../middlewares/authMiddleware.js";
-import { loginUser, logout, signupUser } from "../controller/userController.js";
-import { assignProblem, createProblem, deleteProblem, getAllProblems, rateProblem } from "../controller/problemController.js";
+import { addCommentToProblem, deleteComment, loginUser, logout, signupUser } from "../controller/userController.js";
+import { assignProblem, createProblem, deleteProblem, getAllProblems, getOfficialProblems, rateProblem } from "../controller/problemController.js";
 import { signupOfficial } from "../controller/officialController.js";
 
 
@@ -12,6 +12,8 @@ const router = Router();
 router.route("/signupUser").post(signupUser);
 router.route("/loginUser").post(loginUser);
 router.route("/logout").post(verifyJWT, logout);
+router.route("/addComment/:problemId/:userId").post(verifyJWT, addCommentToProblem);
+router.route("/comments/:commentId/:userId").delete(verifyJWT, deleteComment)
 
 // problem
 router.route("/createProblem/:userId").post(verifyJWT, createProblem);
@@ -21,7 +23,9 @@ router.route("/problem/:problemId/user/:userId").delete(deleteProblem)
 router.route("/getAllproblems").get(getAllProblems)
 
 
+
 // official
 router.route("/signupOfficial").post(signupOfficial)
+router.route("/getProblemOfficial").get(verifyJWT, getOfficialProblems);
 
 export default router;
