@@ -7,6 +7,8 @@ import Home from './pages/Home';
 import MapPage from './pages/MapPage';
 import ContactUs from './pages/ContactUs';
 import DashboardUser from './pages/DashboardUser';
+import DashboardOfficer from './pages/DashboardOfficer';
+import Officials from './pages/Officials';
 
 
 function App() {
@@ -64,6 +66,25 @@ function App() {
             </MainLayout>
           }
         />
+
+        <Route
+          path="/officials"
+          element={
+            <MainLayout>
+              <Officials />
+            </MainLayout>
+          }
+        />
+
+        <Route
+          path="/officials"
+          element={
+            <MainLayout>
+              <Officials />
+            </MainLayout>
+          }
+        />
+
       </Routes>
     </Router>
   );
