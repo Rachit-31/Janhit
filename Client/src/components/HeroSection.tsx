@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+
 const HeroSection: React.FC = () => {
     return (
         <section className="py-16 md:py-24">
@@ -11,7 +12,7 @@ const HeroSection: React.FC = () => {
                 </div>
 
                 <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif font-bold text-gray-900 mb-6">
-                    Your City, Your Voice — आपकी आवाज़, आपकी पहचान
+                    Your City, Your Voice — आपका शहर, आपकी आवाज़
                 </h1>
 
                 <div className="mb-8 md:mb-12">

@@ -303,9 +303,13 @@ const MapPage: React.FC = () => {
                             <div className='self-center text-3xl'>{selectedIssue.description}</div>
                         </h2>
                         <div className="space-y-3">
-                            {selectedIssue.comments.map((comment, index) => (
-                                <div key={index} className="p-2 border-b border-gray-300">{comment}</div>
-                            ))}
+                            {
+                                selectedIssue.comments.length != 0 ?
+                                selectedIssue.comments.map((comment, index) => (
+                                    <div key={index} className="p-2 border-b border-gray-300">{comment}</div>
+                                )) :
+                                <div>No Comments yet</div>
+                            }
                         </div>
                         
                     </div>
