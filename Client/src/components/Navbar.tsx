@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { ChevronDown, Menu, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import userImg from "../assets/userImgM.jpg"
+import logo from '../assets/Logo.jpeg'
 
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -23,8 +24,9 @@ const Navbar: React.FC = () => {
     <nav style={{ backgroundColor: 'rgb(251, 251, 249)' }} className="shadow-sm px-4 py-4 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         {/* Logo */}
-        <div className="flex items-center">
-          <a href="/" className="text-black font-bold text-xl">
+        <div className="flex items-center space-x-4">
+          <a href="/" className="text-black font-bold flex items-center gap-2 text-xl">
+            <img className='rounded-full w-[50px]' src={logo} alt="" />
             Janhit
           </a>
         </div>

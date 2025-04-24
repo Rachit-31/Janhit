@@ -16,7 +16,7 @@ const faqs = [
   },
   {
     question: 'How does voting work?',
-    answer: 'Users can vote on any public issue. The more votes, the higher the priority for resolution.',
+    answer: 'Users can vote on any issue using the severity meter. If the severity of an issue is 3 or above the issue is considered as a vote to fix it. Users can also add their comments (optinal).',
   },
 ];
 
