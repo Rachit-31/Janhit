@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { createElement, useEffect, useState } from 'react';
 import {
     MapContainer,
     TileLayer,
@@ -8,8 +8,10 @@ import {
 } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import axios from 'axios';
 import iconUrl from 'leaflet/dist/images/marker-icon.png';
 import iconShadowUrl from 'leaflet/dist/images/marker-shadow.png';
+import { API } from '../ApiUri';
 
 const issueIcon = new L.Icon({
     iconUrl,
@@ -25,12 +27,14 @@ const liveLocationIcon = new L.Icon({
 });
 
 interface Issue {
-    id: number;
+    id: string;
     position: [number, number];
     description: string;
     severity: number;
     comments: string[];
+    createdBy: string;
 }
+
 
 const DangerRating: React.FC<{ rating: number; onRate: (rating: number) => void }> = ({ rating, onRate }) => (
     <div className="flex space-x-1 cursor-pointer text-yellow-400 text-3xl">
@@ -57,23 +61,40 @@ const AddIssueOnClickComponent: React.FC<{ setNewIssuePos: any; setShowModal: an
 
 const MapPage: React.FC = () => {
     const [position, setPosition] = useState<[number, number] | null>(null);
-    const [issues, setIssues] = useState<Issue[]>([
-        { id: 1, position: [31.469143, 76.268085], description: 'No street light on this road.', severity: 3, comments: [] },
-        { id: 2, position: [31.485406, 76.228254], description: 'Potholes on the Ghaluwal Road', severity: 2, comments: [] },
-        { id: 3, position: [31.476361, 76.272485], description: 'Overflowing Garbage Bin', severity: 4, comments: [] },
-        { id: 4, position: [31.486361, 75.272485], description: 'Street Dog Problem', severity: 4, comments: [] },
-    ]);
+    const [issues, setIssues] = useState<Issue[]>([]);
     const [sortBy, setSortBy] = useState<'severity' | 'distance'>('severity');
     const [newIssuePos, setNewIssuePos] = useState<[number, number] | null>(null);
     const [showModal, setShowModal] = useState(false);
     const [newIssueDesc, setNewIssueDesc] = useState('');
     const [newSeverity, setNewSeverity] = useState(1);
     const [newComment, setNewComment] = useState('');
+    const [comments, setComments] = useState<any[]>([]);
     const [selectedIssue, setSelectedIssue] = useState<Issue | null>(null);
+    const [newIssueTitle, setNewIssueTitle] = useState('');
+    const [newCategory, setNewCategory] = useState('');
 
     useEffect(() => {
         navigator.geolocation.getCurrentPosition(
-            (pos) => setPosition([pos.coords.latitude, pos.coords.longitude]),
+            async (pos) => {
+                const currentPos: [number, number] = [pos.coords.latitude, pos.coords.longitude];
+                setPosition(currentPos);
+
+                try {
+                    const response = await axios.get(`${API}/getAllproblems`);
+
+                    const fetchedIssues = response.data.problems.map((item: any) => ({
+                        id: item._id,
+                        position: [item.location.coordinates[1], item.location.coordinates[0]],
+                        description: item.description,
+                        severity: item.averageRating || 1,
+                        createdBy: item.createdBy,
+                        comments: [],
+                    }));
+                    setIssues(fetchedIssues);
+                } catch (error) {
+                    console.error("Error fetching issues:", error);
+                }
+            },
             (err) => {
                 console.error(err);
                 setPosition([28.6139, 77.2090]);
@@ -81,35 +102,163 @@ const MapPage: React.FC = () => {
         );
     }, []);
 
-    const handleAddIssue = () => {
-        if (!newIssueDesc || !newIssuePos) return;
-        setIssues((prev) => [
-            ...prev,
-            {
-                id: Date.now(),
-                position: newIssuePos,
-                description: newIssueDesc,
-                severity: newSeverity,
-                comments: [newComment], // Initial comment added with the issue
-            },
-        ]);
-        setNewIssueDesc('');
-        setNewSeverity(1);
-        setNewComment('');
-        setShowModal(false);
-        setNewIssuePos(null);
-    };
-
-    const handleAddComment = (issueId: number) => {
-        if (newComment.trim()) {
-            setIssues((prev) =>
-                prev.map((issue) =>
-                    issue.id === issueId ? { ...issue, comments: [...issue.comments, newComment] } : issue
-                )
-            );
-            setNewComment('');
+    const getComments = async (problemId: string) => {
+        try {
+            const response = await axios.get(`${API}/getComment/${problemId}`);
+            if (response.data.success) {
+                return response.data.comments;
+            } else {
+                return [];
+            }
+        } catch (error) {
+            console.error('Error fetching comments:', error);
+            return [];
         }
     };
+    useEffect(() => {
+        const fetch = async () => {
+            if (selectedIssue) {
+                const fetchedComments = await getComments(selectedIssue.id);
+                setComments(fetchedComments);
+            }
+        };
+
+        fetch();
+    }, [selectedIssue]);
+
+
+    const handleAddIssue = async () => {
+        if (!newIssueDesc || !newIssuePos) return;
+
+        const userId = localStorage.getItem("id");
+        const token = localStorage.getItem("token");
+
+        if (!userId || !token) {
+            alert("User ID or token not found. Please log in again.");
+            return;
+        }
+
+        const newIssue = {
+            title: newIssueTitle || "Untitled Issue",
+            description: newIssueDesc,
+            category: newCategory || "General",
+            coordinates: [newIssuePos[1], newIssuePos[0]],
+            rating: newSeverity,
+        };
+
+
+
+        try {
+            const response = await axios.post(
+                `${API}/createProblem/${userId}`,
+                newIssue,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
+            const created = response.data.problem;
+
+            // setIssues((prev) => [
+            //     ...prev,
+            //     {
+            //         id: created._id,
+            //         position: [created.location.coordinates[1], created.location.coordinates[0]],
+            //         description: created.description,
+            //         severity: created.averageRating,
+            //         comments: [newComment],
+            //     },
+            // ]);
+            setIssues((prev) => [
+                ...prev,
+                {
+                    id: created._id,
+                    position: [created.location.coordinates[1], created.location.coordinates[0]],
+                    description: created.description,
+                    severity: created.averageRating,
+                    comments: [newComment],
+                    createdBy: created.createdBy,
+                },
+            ]);
+
+
+            setNewIssueDesc('');
+            setNewSeverity(1);
+            setNewComment('');
+            setShowModal(false);
+            setNewIssuePos(null);
+        } catch (error) {
+            console.error("Error adding issue:", error);
+            alert("Failed to create issue. Please try again.");
+        }
+    };
+
+    const handleDeleteIssue = async (problemId: string) => {
+        const userId = localStorage.getItem("id");
+        if (!userId) {
+            alert("User not found. Please log in.");
+            return;
+        }
+
+        const confirm = window.confirm("Are you sure you want to delete this issue?");
+        if (!confirm) return;
+
+        try {
+            await axios.delete(`${API}/problem/${problemId}/user/${userId}`, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
+            });
+
+            setIssues((prev) => prev.filter((issue) => issue.id !== problemId));
+            alert("Issue deleted successfully.");
+        } catch (err) {
+            console.error("Delete error:", err);
+            alert("Failed to delete issue. Please try again.");
+        }
+    };
+
+    const handleAddComment = async (issueId: string) => {
+        const userId = localStorage.getItem("id");
+        const token = localStorage.getItem("token");
+
+        if (!newComment.trim()) return;
+        if (!userId || !token) {
+            alert("User not authenticated");
+            return;
+        }
+
+        try {
+            const response = await axios.post(
+                `${API}/addComment/${issueId}/${userId}`,
+                { comment: newComment },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
+
+            const addedComment = response.data.comment.comment;
+
+            setIssues((prev) =>
+                prev.map((issue) =>
+                    issue.id === issueId
+                        ? { ...issue, comments: [...issue.comments, addedComment] }
+                        : issue
+                )
+            );
+
+            setNewComment('');
+        } catch (error) {
+            console.error("Error adding comment:", error);
+            alert("Failed to add comment. Please try again.");
+        }
+    };
+
 
     const getDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
         const toRad = (x: number) => (x * Math.PI) / 180;
@@ -169,6 +318,7 @@ const MapPage: React.FC = () => {
                                             }}
                                         />
                                     </div>
+
                                     <div className="flex flex-col gap-2 mt-2">
                                         <span className="text-gray-600">Add a Comment:</span>
                                         <textarea
@@ -185,24 +335,35 @@ const MapPage: React.FC = () => {
                                             Add Comment
                                         </button>
                                         <button
-                                            onClick={() => {
-                                                setSelectedIssue(issue);
-                                            }}
+                                            onClick={() => setSelectedIssue(issue)}
                                             className="bg-green-500 text-white px-3 py-1 rounded mt-2"
                                         >
                                             All Comments
                                         </button>
+
+
+
+                                        {issue.createdBy?.toString() === localStorage.getItem("id")?.toString() && (
+                                            <button
+                                                onClick={() => handleDeleteIssue(issue.id)}
+                                                className="bg-red-600 text-white px-3 py-1 rounded mt-2 hover:bg-red-700"
+                                            >
+                                                Delete Issue
+                                            </button>
+                                        )}
                                     </div>
                                 </Popup>
                             </Marker>
                         ))}
+
                     </MapContainer>
 
+                    {/* Table */}
                     <div className="max-w-4xl mx-auto">
                         <div className="flex justify-end mb-4">
                             <label className="text-sm font-medium mr-2">Sort by:</label>
                             <select
-                                className="border border-gray-300 rounded px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="border border-gray-300 rounded px-3 py-1 text-sm"
                                 value={sortBy}
                                 onChange={(e) => setSortBy(e.target.value as 'severity' | 'distance')}
                             >
@@ -226,7 +387,7 @@ const MapPage: React.FC = () => {
                                             ? getDistance(position[0], position[1], issue.position[0], issue.position[1])
                                             : 0;
                                         return (
-                                            <tr key={issue.id} className="hover:bg-blue-50 transition-colors duration-150">
+                                            <tr key={issue.id} className="hover:bg-blue-50">
                                                 <td className="px-6 py-4">{issue.description}</td>
                                                 <td className="px-6 py-4">{issue.severity}</td>
                                                 <td className="px-6 py-4">{dist.toFixed(2)}</td>
@@ -242,10 +403,20 @@ const MapPage: React.FC = () => {
                 <p className="text-center text-gray-600">Fetching your location...</p>
             )}
 
+            {/* Modal */}
             {showModal && (
                 <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-[9999]">
                     <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
                         <h2 className="text-xl font-semibold mb-4">Report New Issue</h2>
+
+                        <input
+                            type="text"
+                            placeholder="Enter issue title..."
+                            value={newIssueTitle}
+                            onChange={(e) => setNewIssueTitle(e.target.value)}
+                            className="w-full border rounded px-3 py-2 mb-4"
+                        />
+
                         <input
                             type="text"
                             placeholder="Enter issue description..."
@@ -253,10 +424,29 @@ const MapPage: React.FC = () => {
                             onChange={(e) => setNewIssueDesc(e.target.value)}
                             className="w-full border rounded px-3 py-2 mb-4"
                         />
+
+                        <div className="mb-4">
+                            <p className="mb-1 font-medium">Category:</p>
+                            <select
+                                value={newCategory}
+                                onChange={(e) => setNewCategory(e.target.value)}
+                                className="w-full border rounded px-3 py-2"
+                            >
+                                <option value="">Select a category</option>
+                                <option value="Road">Road</option>
+                                <option value="Sanitation">Sanitation</option>
+                                <option value="Electricity">Electricity</option>
+                                <option value="Water Supply">Water Supply</option>
+                                <option value="Garbage">Garbage</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+
                         <div className="mb-4">
                             <p className="mb-1 font-medium">Rate Severity:</p>
                             <DangerRating rating={newSeverity} onRate={setNewSeverity} />
                         </div>
+
                         <div className="mb-4">
                             <p className="mb-1 font-medium">Add a Comment:</p>
                             <textarea
@@ -267,6 +457,7 @@ const MapPage: React.FC = () => {
                                 rows={3}
                             />
                         </div>
+
                         <div className="flex justify-end space-x-2">
                             <button
                                 onClick={() => setShowModal(false)}
@@ -282,36 +473,36 @@ const MapPage: React.FC = () => {
                             </button>
                         </div>
                     </div>
+
                 </div>
             )}
 
-            {/* Show comments modal */}
+            {/* Comments Modal */}
             {selectedIssue && (
-                <div className="fixed inset-0 flex flex-col items-center justify-center bg-black bg-opacity-50 z-[9999]">
-                    <div className='text-white text-5xl font-bold'>Comments</div>
-                    <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md h-[80%] relative flex flex-col overflow-scroll">
-                        <h2 className="text-xl font-semibold border-b-black bg-white mb-4 flex flex-col ">
-                            <div className='flex flex-row items-center justify-between'>
-                                <span className='text-xs text-gray-400'>Issue name:</span>
-                                <button
-                                    onClick={() => setSelectedIssue(null)}
-                                    className="mt-4 text-gray-600 border border-black px-[10px] rounded-full"
-                                >
-                                    ×
-                                </button>
+                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-[9999]">
+                    <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md h-[80%] overflow-y-auto">
+                        <div className="flex justify-between items-center mb-4">
+                            <div>
+                                <h2 className="text-lg text-gray-700 font-semibold">Issue:</h2>
+                                <p className="text-xl">{selectedIssue.description}</p>
                             </div>
-                            <div className='self-center text-3xl'>{selectedIssue.description}</div>
-                        </h2>
-                        <div className="space-y-3">
-                            {
-                                selectedIssue.comments.length != 0 ?
-                                selectedIssue.comments.map((comment, index) => (
-                                    <div key={index} className="p-2 border-b border-gray-300">{comment}</div>
-                                )) :
-                                <div>No Comments yet</div>
-                            }
+                            <button
+                                onClick={() => setSelectedIssue(null)}
+                                className="text-2xl text-gray-600"
+                            >
+                                ×
+                            </button>
                         </div>
-                        
+                        <div className="space-y-3">
+                            {comments.length > 0 ? (
+                                comments.map((comment, index) => (
+                                    <div key={index} className="p-2 border-b">{comment.comment}</div>
+                                ))
+                            ) : (
+                                <div>No comments yet.</div>
+                            )}
+
+                        </div>
                     </div>
                 </div>
             )}

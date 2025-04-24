@@ -126,3 +126,24 @@ export const deleteComment = async (req, res) => {
     res.status(500).json({ success: false, message: "Server Error" });
   }
 };
+
+
+export const getCommentsForProblem = async (req, res) => {
+  try {
+      const { problemId } = req.params;
+      const problem = await ProblemReport.findById(problemId);
+      if (!problem) {
+          return res.status(404).json({ success: false, message: "Problem not found" });
+      }
+
+      const comments = await Comment.find({ toProblem: problemId })
+
+      res.status(200).json({
+          success: true,
+          comments,
+      });
+  } catch (error) {
+      console.error("Error fetching comments:", error);
+      res.status(500).json({ success: false, message: "Server Error" });
+  }
+};
