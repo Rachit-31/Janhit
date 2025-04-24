@@ -9,6 +9,7 @@ import ContactUs from './pages/ContactUs';
 import DashboardUser from './pages/DashboardUser';
 import DashboardOfficer from './pages/DashboardOfficer';
 import Officials from './pages/Officials';
+import MyTeam from './pages/MyTeam';
 
 
 function App() {
@@ -81,6 +82,15 @@ function App() {
           element={
             <MainLayout>
               <DashboardOfficer />
+            </MainLayout>
+          }
+        />
+
+        <Route
+          path="/myteam"
+          element={
+            <MainLayout>
+              <MyTeam />
             </MainLayout>
           }
         />
