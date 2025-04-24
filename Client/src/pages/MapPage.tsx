@@ -1,4 +1,5 @@
 import React, { createElement, useEffect, useState } from 'react';
+import { toast, Toaster } from 'react-hot-toast';
 import {
     MapContainer,
     TileLayer,
@@ -26,14 +27,28 @@ const liveLocationIcon = new L.Icon({
     iconAnchor: [15, 30],
 });
 
+interface Comment {
+    _id: string;
+    comment: string;
+    userMade: {
+        _id: string;
+        name: string;
+    };
+    toProblem: string;
+    createdAt: string;
+}
+
 interface Issue {
     id: string;
     position: [number, number];
     description: string;
     severity: number;
-    comments: string[];
+    comments: Comment[];
     createdBy: string;
+    voteCount?: number;
+    averageRating?: number;
 }
+
 
 
 const DangerRating: React.FC<{ rating: number; onRate: (rating: number) => void }> = ({ rating, onRate }) => (
@@ -134,7 +149,7 @@ const MapPage: React.FC = () => {
         const token = localStorage.getItem("token");
 
         if (!userId || !token) {
-            alert("User ID or token not found. Please log in again.");
+            toast.error("User ID or token not found. Please log in again.");
             return;
         }
 
@@ -145,8 +160,6 @@ const MapPage: React.FC = () => {
             coordinates: [newIssuePos[1], newIssuePos[0]],
             rating: newSeverity,
         };
-
-
 
         try {
             const response = await axios.post(
@@ -159,30 +172,22 @@ const MapPage: React.FC = () => {
                     },
                 }
             );
-            const created = response.data.problem;
 
-            // setIssues((prev) => [
-            //     ...prev,
-            //     {
-            //         id: created._id,
-            //         position: [created.location.coordinates[1], created.location.coordinates[0]],
-            //         description: created.description,
-            //         severity: created.averageRating,
-            //         comments: [newComment],
-            //     },
-            // ]);
+            const created = response.data.problem;
+            toast.success("New Issue is being created")
             setIssues((prev) => [
                 ...prev,
                 {
                     id: created._id,
                     position: [created.location.coordinates[1], created.location.coordinates[0]],
                     description: created.description,
-                    severity: created.averageRating,
-                    comments: [newComment],
+                    severity: created.averageRating || 1,
+                    comments: [],
                     createdBy: created.createdBy,
+                    voteCount: created.voteCount || 0,
+                    averageRating: created.averageRating || 1,
                 },
             ]);
-
 
             setNewIssueDesc('');
             setNewSeverity(1);
@@ -191,20 +196,52 @@ const MapPage: React.FC = () => {
             setNewIssuePos(null);
         } catch (error) {
             console.error("Error adding issue:", error);
-            alert("Failed to create issue. Please try again.");
+            toast.error("Failed to create issue. Please try again.");
         }
     };
+
+
+
+
+
+
 
     const handleDeleteIssue = async (problemId: string) => {
         const userId = localStorage.getItem("id");
         if (!userId) {
-            alert("User not found. Please log in.");
+            toast.error("User not found. Please log in.");
             return;
         }
 
-        const confirm = window.confirm("Are you sure you want to delete this issue?");
-        if (!confirm) return;
+        const confirmToast = toast(
+            (t) => (
+                <div>
+                    <p>Are you sure you want to delete this issue?</p>
+                    <div>
+                        <button
+                            onClick={() => handleConfirmDelete(t.id, problemId, userId)}
+                            className="bg-red-500 text-white py-1 px-2 rounded hover:bg-red-700"
+                        >
+                            Yes
+                        </button>
+                        <button
+                            onClick={() => toast.dismiss(t.id)}
+                            className="bg-gray-500 text-white py-1 px-2 rounded hover:bg-gray-700 ml-2"
+                        >
+                            No
+                        </button>
+                    </div>
+                </div>
+            ),
+            {
+                duration: Infinity,
+                position: 'top-center',
+                style: { background: '#333', color: 'white', padding: '10px' },
+            }
+        );
+    };
 
+    const handleConfirmDelete = async (toastId: string, problemId: string, userId: string) => {
         try {
             await axios.delete(`${API}/problem/${problemId}/user/${userId}`, {
                 headers: {
@@ -213,12 +250,15 @@ const MapPage: React.FC = () => {
             });
 
             setIssues((prev) => prev.filter((issue) => issue.id !== problemId));
-            alert("Issue deleted successfully.");
+            toast.dismiss(toastId);
+            toast.success("Issue deleted successfully.");
         } catch (err) {
             console.error("Delete error:", err);
-            alert("Failed to delete issue. Please try again.");
+            toast.dismiss(toastId);
+            toast.error("Failed to delete issue. Please try again.");
         }
     };
+
 
     const handleAddComment = async (issueId: string) => {
         const userId = localStorage.getItem("id");
@@ -226,7 +266,7 @@ const MapPage: React.FC = () => {
 
         if (!newComment.trim()) return;
         if (!userId || !token) {
-            alert("User not authenticated");
+            toast.error("User not authenticated");
             return;
         }
 
@@ -243,7 +283,7 @@ const MapPage: React.FC = () => {
             );
 
             const addedComment = response.data.comment.comment;
-
+            toast.success("Comment has been added successfully")
             setIssues((prev) =>
                 prev.map((issue) =>
                     issue.id === issueId
@@ -255,7 +295,50 @@ const MapPage: React.FC = () => {
             setNewComment('');
         } catch (error) {
             console.error("Error adding comment:", error);
-            alert("Failed to add comment. Please try again.");
+            toast.error("Failed to add comment. Please try again.");
+        }
+    };
+
+    const handleRateIssue = async (issueId: string, rating: number) => {
+        const userId = localStorage.getItem("id");
+        const token = localStorage.getItem("token");
+
+        if (!userId || !token) {
+            toast.error("Please log in to rate an issue.");
+            return;
+        }
+
+        try {
+            const res = await axios.post(
+                `${API}/problems/${issueId}/rate/${userId}`,
+                { rating },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
+
+            if (res.data.success) {
+                setIssues((prev) =>
+                    prev.map((issue) =>
+                        issue.id === issueId
+                            ? {
+                                ...issue,
+                                voteCount: (issue.voteCount || 0) + (rating >= 3 ? 1 : 0),
+                                averageRating: parseFloat(res.data.updatedAverage || rating),
+                            }
+                            : issue
+                    )
+                );
+                toast.success("Rating submitted successfully!");
+                window.location.reload();
+            }
+        } catch (err: any) {
+            const msg = err.response?.data?.message || "Error rating issue.";
+            toast.error(msg);
+            console.error(err);
         }
     };
 
@@ -305,8 +388,14 @@ const MapPage: React.FC = () => {
                             <Marker key={issue.id} position={issue.position} icon={issueIcon}>
                                 <Popup>
                                     <div className="text-lg">
-                                        <p className="font-semibold">{issue.description}</p>
-                                        <p className="mt-1 text-gray-600">Severity:</p>
+                                        <p className="text-gray-700 mb-2">
+                                            <span className="font-semibold text-black">Description:</span> {issue.description}
+                                        </p>
+
+                                        <p className="mt-1 text-gray-700">
+                                            <span className="font-semibold text-black">Severity:</span> {issue.severity}
+                                        </p>
+
                                         <DangerRating
                                             rating={issue.severity}
                                             onRate={(rating) => {
@@ -341,6 +430,15 @@ const MapPage: React.FC = () => {
                                             All Comments
                                         </button>
 
+                                        {issue.createdBy !== localStorage.getItem("id") && (
+                                            <div className="mt-2">
+                                                <p className="font-medium mb-1">Rate this issue:</p>
+                                                <DangerRating
+                                                    rating={0}
+                                                    onRate={(value) => handleRateIssue(issue.id, value)}
+                                                />
+                                            </div>
+                                        )}
 
 
                                         {issue.createdBy?.toString() === localStorage.getItem("id")?.toString() && (
@@ -477,13 +575,12 @@ const MapPage: React.FC = () => {
                 </div>
             )}
 
-            {/* Comments Modal */}
             {selectedIssue && (
                 <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-[9999]">
                     <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md h-[80%] overflow-y-auto">
                         <div className="flex justify-between items-center mb-4">
                             <div>
-                                <h2 className="text-lg text-gray-700 font-semibold">Issue:</h2>
+                                <h2 className="text-lg text-gray-700 font-semibold">Description:</h2>
                                 <p className="text-xl">{selectedIssue.description}</p>
                             </div>
                             <button
