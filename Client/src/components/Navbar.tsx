@@ -1,14 +1,28 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ChevronDown, Menu, X } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import userImg from "../assets/userImgM.jpg"
+import { Link, useNavigate } from 'react-router-dom';
 import logo from '../assets/Logo.jpeg'
+import toast from 'react-hot-toast';
 
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [brandDropdownOpen, setBrandDropdownOpen] = useState(false);
   const [creatorDropdownOpen, setCreatorDropdownOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    setIsLoggedIn(!!token);
+  }, [])
+
+  const handleLogOut =()=>{
+    localStorage.removeItem("token");
+    localStorage.removeItem("id");
+    toast.success("Successfully Logged out")
+    setIsLoggedIn(false);
+    navigate("/login")
+  }
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
@@ -86,13 +100,23 @@ const Navbar: React.FC = () => {
           <Link to="/contactUs" className="text-gray-700 hover:text-gray-900 transition-colors">Contact Us</Link>
           {
             isLoggedIn 
-            ? <Link to="/dashboardUser" className="inline-block">
+            ? 
+            <>
+            <Link to="/dashboardUser" className="inline-block">
                 <img
-                  src={userImg}
+                  src="\public\Profile.png"
                   alt="User"
                   className="rounded-full border border-black size-12"
                 />
               </Link>
+              <button
+                onClick={handleLogOut}
+                className="text-gray-700 cursor-pointer"
+              >
+                Logout
+              </button>
+
+            </>
             : <Link to="/login" className="text-gray-700 hover:text-gray-900 transition-colors">Login</Link>
           }
           <Link to="/map" className="bg-gray-800 text-white px-4 py-2 rounded-md flex items-center hover:bg-gray-700 transition-colors">
@@ -163,7 +187,14 @@ const Navbar: React.FC = () => {
             <Link onClick={closeMenu} to="/" className="block text-gray-700 hover:text-gray-900">Home</Link>
             <Link onClick={closeMenu} to="/aboutus" className="block text-gray-700 hover:text-gray-900">About</Link>
             <Link onClick={closeMenu} to="/contactUs" className="block text-gray-700 hover:text-gray-900">Contact Us</Link>
-            <Link onClick={closeMenu} to="/login" className="block text-gray-700 hover:text-gray-900">Login</Link>
+            {isLoggedIn ? (
+              <>
+                <Link onClick={closeMenu} to="/dashboardUser" className="block text-gray-700 hover:text-gray-900">Profile</Link>
+                <button onClick={() => { handleLogOut(); closeMenu(); }} className="block text-left w-full text-gray-700">Logout</button>
+              </>
+            ) : (
+              <Link onClick={closeMenu} to="/login" className="block text-gray-700 hover:text-gray-900">Login</Link>
+            )}
             <Link
               onClick={closeMenu}
               to="/map"
