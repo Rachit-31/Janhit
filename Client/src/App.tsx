@@ -10,6 +10,7 @@ import DashboardUser from './pages/DashboardUser';
 import DashboardOfficer from './pages/DashboardOfficer';
 import Officials from './pages/Officials';
 import MyTeam from './pages/MyTeam';
+import ProtectedRoute from './ProtectedRoute';
 
 
 function App() {
@@ -42,15 +43,6 @@ function App() {
         />
 
         <Route
-          path="/map"
-          element={
-            <MainLayout>
-              <MapPage />
-            </MainLayout>
-          }
-        />
-
-        <Route
           path="/contactUs"
           element={
             <MainLayout>
@@ -60,10 +52,10 @@ function App() {
         />
 
         <Route
-          path="/dashboardUser"
+          path="/myteam"
           element={
             <MainLayout>
-              <DashboardUser />
+              <MyTeam />
             </MainLayout>
           }
         />
@@ -77,23 +69,35 @@ function App() {
           }
         />
 
-        <Route
-          path="/officialsDashboard"
-          element={
-            <MainLayout>
-              <DashboardOfficer />
-            </MainLayout>
-          }
-        />
 
-        <Route
-          path="/myteam"
-          element={
-            <MainLayout>
-              <MyTeam />
-            </MainLayout>
-          }
-        />
+
+        <Route element={<ProtectedRoute />}>
+          <Route
+            path="/dashboardUser"
+            element={
+              <MainLayout>
+                <DashboardUser />
+              </MainLayout>
+            }
+          />
+          <Route
+            path="/officialsDashboard"
+            element={
+              <MainLayout>
+                <DashboardOfficer />
+              </MainLayout>
+            }
+          />
+          <Route
+            path="/map"
+            element={
+              <MainLayout>
+                <MapPage />
+              </MainLayout>
+            }
+          />
+        </Route>
+
 
       </Routes>
     </Router>
