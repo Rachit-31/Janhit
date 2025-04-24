@@ -53,7 +53,7 @@ const Signup: React.FC = () => {
           <input name="name" type="text" placeholder="Your Name" value={formData.name} onChange={handleChange} className="w-full border rounded-md px-3 py-2" required />
           <input name="email" type="email" placeholder="you@example.com" value={formData.email} onChange={handleChange} className="w-full border rounded-md px-3 py-2" required />
           <input name="password" type="password" placeholder="••••••••" value={formData.password} onChange={handleChange} className="w-full border rounded-md px-3 py-2" required />
-          <input name="Aadhar" type="text" placeholder="Aadhar number" value={formData.phone} onChange={handleChange} className="w-full border rounded-md px-3 py-2" required />
+          <input name="phone" type="text" placeholder="Aadhar number" value={formData.phone} onChange={handleChange} className="w-full border rounded-md px-3 py-2" required />
           <input name="longitude" type="number" step="any" placeholder="Longitude" value={formData.longitude} onChange={handleChange} className="w-full border rounded-md px-3 py-2" required />
           <input name="latitude" type="number" step="any" placeholder="Latitude" value={formData.latitude} onChange={handleChange} className="w-full border rounded-md px-3 py-2" required />
 
