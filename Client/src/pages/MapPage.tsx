@@ -11,8 +11,6 @@ import 'leaflet/dist/leaflet.css';
 import iconUrl from 'leaflet/dist/images/marker-icon.png';
 import iconShadowUrl from 'leaflet/dist/images/marker-shadow.png';
 
-// Note: To change the color of icons based on the severity
-
 const issueIcon = new L.Icon({
     iconUrl,
     shadowUrl: iconShadowUrl,
@@ -31,46 +29,47 @@ interface Issue {
     position: [number, number];
     description: string;
     severity: number;
+    comments: string[];
 }
 
 const DangerRating: React.FC<{ rating: number; onRate: (rating: number) => void }> = ({ rating, onRate }) => (
     <div className="flex space-x-1 cursor-pointer text-yellow-400 text-3xl">
         {[1, 2, 3, 4, 5].map((danger) => (
-            <span key={danger} onClick={() => onRate(danger)} className='w-[100px] h-[40px]'>
-                {danger <= rating ? <div className='text-xl'>⚠️</div> : <div className='text-2xl'>⚠</div>}
+            <span key={danger} onClick={() => onRate(danger)} className="w-[100px] h-[40px]">
+                {danger <= rating ? <div className="text-xl">⚠️</div> : <div className="text-2xl">⚠</div>}
             </span>
         ))}
     </div>
 );
 
+const AddIssueOnClickComponent: React.FC<{ setNewIssuePos: any; setShowModal: any }> = ({
+    setNewIssuePos,
+    setShowModal,
+}) => {
+    useMapEvents({
+        click(e) {
+            setNewIssuePos([e.latlng.lat, e.latlng.lng]);
+            setShowModal(true);
+        },
+    });
+    return null;
+};
+
 const MapPage: React.FC = () => {
     const [position, setPosition] = useState<[number, number] | null>(null);
     const [issues, setIssues] = useState<Issue[]>([
-        {
-            id: 1,
-            position: [31.469143, 76.268085],
-            description: 'Pothole near Connaught Place',
-            severity: 3,
-        },
-        {
-            id: 2,
-            position: [31.485406, 76.228254],
-            description: 'Broken street light in Karol Bagh',
-            severity: 2,
-        },
-        {
-            id: 3,
-            position: [31.476361, 76.272485],
-            description: 'Overflowing Garbage Bin',
-            severity: 4,
-        },
+        { id: 1, position: [31.469143, 76.268085], description: 'No street light on this road.', severity: 3, comments: [] },
+        { id: 2, position: [31.485406, 76.228254], description: 'Potholes on the Ghaluwal Road', severity: 2, comments: [] },
+        { id: 3, position: [31.476361, 76.272485], description: 'Overflowing Garbage Bin', severity: 4, comments: [] },
+        { id: 4, position: [31.486361, 75.272485], description: 'Street Dog Problem', severity: 4, comments: [] },
     ]);
-
     const [sortBy, setSortBy] = useState<'severity' | 'distance'>('severity');
     const [newIssuePos, setNewIssuePos] = useState<[number, number] | null>(null);
     const [showModal, setShowModal] = useState(false);
     const [newIssueDesc, setNewIssueDesc] = useState('');
     const [newSeverity, setNewSeverity] = useState(1);
+    const [newComment, setNewComment] = useState('');
+    const [selectedIssue, setSelectedIssue] = useState<Issue | null>(null);
 
     useEffect(() => {
         navigator.geolocation.getCurrentPosition(
@@ -82,16 +81,6 @@ const MapPage: React.FC = () => {
         );
     }, []);
 
-    const AddIssueOnClick = () => {
-        useMapEvents({
-            click(e) {
-                setNewIssuePos([e.latlng.lat, e.latlng.lng]);
-                setShowModal(true);
-            },
-        });
-        return null;
-    };
-
     const handleAddIssue = () => {
         if (!newIssueDesc || !newIssuePos) return;
         setIssues((prev) => [
@@ -101,12 +90,25 @@ const MapPage: React.FC = () => {
                 position: newIssuePos,
                 description: newIssueDesc,
                 severity: newSeverity,
+                comments: [newComment], // Initial comment added with the issue
             },
         ]);
         setNewIssueDesc('');
         setNewSeverity(1);
+        setNewComment('');
         setShowModal(false);
         setNewIssuePos(null);
+    };
+
+    const handleAddComment = (issueId: number) => {
+        if (newComment.trim()) {
+            setIssues((prev) =>
+                prev.map((issue) =>
+                    issue.id === issueId ? { ...issue, comments: [...issue.comments, newComment] } : issue
+                )
+            );
+            setNewComment('');
+        }
     };
 
     const getDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
@@ -146,7 +148,7 @@ const MapPage: React.FC = () => {
                             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
                         />
-                        <AddIssueOnClick />
+                        <AddIssueOnClickComponent setNewIssuePos={setNewIssuePos} setShowModal={setShowModal} />
                         <Marker position={position} icon={liveLocationIcon}>
                             <Popup>You are here</Popup>
                         </Marker>
@@ -166,6 +168,30 @@ const MapPage: React.FC = () => {
                                                 );
                                             }}
                                         />
+                                    </div>
+                                    <div className="flex flex-col gap-2 mt-2">
+                                        <span className="text-gray-600">Add a Comment:</span>
+                                        <textarea
+                                            className="p-2 border border-gray-300 rounded"
+                                            value={newComment}
+                                            onChange={(e) => setNewComment(e.target.value)}
+                                            cols={40}
+                                            rows={3}
+                                        />
+                                        <button
+                                            onClick={() => handleAddComment(issue.id)}
+                                            className="bg-blue-500 text-white px-3 py-1 rounded"
+                                        >
+                                            Add Comment
+                                        </button>
+                                        <button
+                                            onClick={() => {
+                                                setSelectedIssue(issue);
+                                            }}
+                                            className="bg-green-500 text-white px-3 py-1 rounded mt-2"
+                                        >
+                                            All Comments
+                                        </button>
                                     </div>
                                 </Popup>
                             </Marker>
@@ -199,7 +225,6 @@ const MapPage: React.FC = () => {
                                         const dist = position
                                             ? getDistance(position[0], position[1], issue.position[0], issue.position[1])
                                             : 0;
-
                                         return (
                                             <tr key={issue.id} className="hover:bg-blue-50 transition-colors duration-150">
                                                 <td className="px-6 py-4">{issue.description}</td>
@@ -232,6 +257,16 @@ const MapPage: React.FC = () => {
                             <p className="mb-1 font-medium">Rate Severity:</p>
                             <DangerRating rating={newSeverity} onRate={setNewSeverity} />
                         </div>
+                        <div className="mb-4">
+                            <p className="mb-1 font-medium">Add a Comment:</p>
+                            <textarea
+                                className="p-2 border border-gray-300 rounded"
+                                value={newComment}
+                                onChange={(e) => setNewComment(e.target.value)}
+                                cols={40}
+                                rows={3}
+                            />
+                        </div>
                         <div className="flex justify-end space-x-2">
                             <button
                                 onClick={() => setShowModal(false)}
@@ -246,6 +281,33 @@ const MapPage: React.FC = () => {
                                 Add Issue
                             </button>
                         </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Show comments modal */}
+            {selectedIssue && (
+                <div className="fixed inset-0 flex flex-col items-center justify-center bg-black bg-opacity-50 z-[9999]">
+                    <div className='text-white text-5xl font-bold'>Comments</div>
+                    <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md h-[80%] relative flex flex-col overflow-scroll">
+                        <h2 className="text-xl font-semibold border-b-black bg-white mb-4 flex flex-col ">
+                            <div className='flex flex-row items-center justify-between'>
+                                <span className='text-xs text-gray-400'>Issue name:</span>
+                                <button
+                                    onClick={() => setSelectedIssue(null)}
+                                    className="mt-4 text-gray-600 border border-black px-[10px] rounded-full"
+                                >
+                                    ×
+                                </button>
+                            </div>
+                            <div className='self-center text-3xl'>{selectedIssue.description}</div>
+                        </h2>
+                        <div className="space-y-3">
+                            {selectedIssue.comments.map((comment, index) => (
+                                <div key={index} className="p-2 border-b border-gray-300">{comment}</div>
+                            ))}
+                        </div>
+                        
                     </div>
                 </div>
             )}
