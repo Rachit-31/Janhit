@@ -29,12 +29,9 @@ const HeroSection: React.FC = () => {
                     >
                         Report an issue <span className="ml-2">→</span>
                     </Link>
-                    <a
-                        href="#"
-                        className="border border-gray-500 text-gray-800 px-8 py-3 rounded-md hover:bg-gray-100 transition duration-300 font-bold"
-                    >
+                    <Link to='/myteam' className="border border-gray-500 text-gray-800 px-8 py-3 rounded-md hover:bg-gray-100 transition duration-300 font-bold">
                         Contact our team
-                    </a>
+                    </Link>
                 </div>
 
 
