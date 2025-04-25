@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { FaHome, FaListAlt, FaLock } from "react-icons/fa";
+import { FaHome, FaListAlt } from "react-icons/fa";
 
 const DashboardUser: React.FC = () => {
   const [activeSection, setActiveSection] = useState<"account" | "issues">("account");

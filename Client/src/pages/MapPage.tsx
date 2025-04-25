@@ -1,5 +1,6 @@
 import React, { createElement, useEffect, useState } from 'react';
 import { toast, Toaster } from 'react-hot-toast';
+import noresults from '../assets/noresults.jpg'
 import {
     MapContainer,
     TileLayer,
@@ -194,6 +195,9 @@ const MapPage: React.FC = () => {
             setNewComment('');
             setShowModal(false);
             setNewIssuePos(null);
+            setNewIssueTitle('');
+            setNewCategory('');
+
         } catch (error) {
             console.error("Error adding issue:", error);
             toast.error("Failed to create issue. Please try again.");
@@ -596,7 +600,10 @@ const MapPage: React.FC = () => {
                                     <div key={index} className="p-2 border-b">{comment.comment}</div>
                                 ))
                             ) : (
-                                <div>No comments yet.</div>
+                                <div className='flex flex-col items-center'>
+                                    <img className='w-[50%] h-[50%]' src={noresults} alt="" />
+                                    <div>No comments yet.</div>
+                                </div>
                             )}
 
                         </div>
