@@ -6,9 +6,11 @@ const app = express();
 
 
 
+// const cors = require("cors");
+
 app.use(cors({
-  origin: process.env.CORS, 
-  credentials: true,
+  origin: "http://localhost:5173", // the frontend URL
+  credentials: true
 }));
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));

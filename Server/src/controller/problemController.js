@@ -209,6 +209,24 @@ export const getAllProblems = async (req, res) => {
     }
 };
 
+export const getAllUserProblems = async (req, res) => {
+    try {
+        const problems = await ProblemReport.find().lean();
+        const formattedProblems = problems.map((problem) => ({
+            ...problem,
+            createdBy: problem.createdBy.toString(), 
+        }));    
+        console.log(formattedProblems)
+        res.status(200).json({
+            success: true,
+            count: formattedProblems.length,
+            problems: formattedProblems,
+        });
+    } catch (error) {
+        console.error("Error fetching all problems:", error);
+        res.status(500).json({ success: false, message: "Server Error" });
+    }
+};
 
 
 
