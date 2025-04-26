@@ -49,7 +49,7 @@ const Navbar: React.FC = () => {
         <div className="hidden md:flex items-center space-x-8">
           <Link to="/" className="text-gray-700 hover:text-gray-900 transition-colors">Home</Link>
 
-          <div className="relative">
+          {/* <div className="relative">
             <button
               className="flex items-center text-gray-700 hover:text-gray-900 transition-colors"
               onClick={() => setBrandDropdownOpen(!brandDropdownOpen)}
@@ -62,7 +62,7 @@ const Navbar: React.FC = () => {
                 <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Option 2</a>
               </div>
             )}
-          </div>
+          </div> */}
 
           <div className="relative">
             <button

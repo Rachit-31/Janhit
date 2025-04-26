@@ -59,6 +59,15 @@ export const loginUser = async (req, res) => {
   }
 }
 
+export const getUser = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id).select("-password")
+    res.json(user);
+  } catch (error) {
+    res.status(500).json({ message: "Login error", error: error.message });
+  }
+}
+
 export const logout = async (req, res) => {
   try {
     res
@@ -126,6 +135,17 @@ export const deleteComment = async (req, res) => {
     res.status(500).json({ success: false, message: "Server Error" });
   }
 };
+
+export const getAllIssues = async (req, res) => {
+  try {
+    const userId = await User.findById(req.user._id).select("id")
+    const problems = await ProblemReport.find({createdBy: userId}).lean();
+    res.json(problems)
+  } catch (error) {
+    console.error("Error fetching Issues:", error);
+    res.status(500).json({ success: false, message: "Server Error" });
+  }
+}
 
 
 export const getCommentsForProblem = async (req, res) => {
