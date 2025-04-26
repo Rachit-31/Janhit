@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { API } from '../ApiUri';
-import { divIcon } from 'leaflet';
+import noissue from '../assets/noIssues1.png'
 
 interface User {
   _id: string;
@@ -158,7 +158,10 @@ const DashboardUser: React.FC = () => {
                 </div>
               ))
             ) : (
-              <div>No issues available.</div>
+              <div className='flex flex-col items-center'>
+                <img src={noissue} alt="" className='w-[50%] opacity-50'/>
+                <div className='font-semibold text-gray-500 font-mono'>Wow, you have no issues</div>
+              </div>
             )}
           </div>
         </div>
