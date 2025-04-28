@@ -21,9 +21,9 @@ const TeamCard: React.FC<TeamCardProps> = ({ avatar, name, description, linkedin
         <h3 className="text-xl font-bold text-gray-800 mb-1 text-center">{name}</h3>
         <p className="text-gray-600 text-center mb-4 font-semibold text-md">{description}</p>
         <div className="flex gap-4 mt-auto">
-            <a href={linkedin} aria-label="Dribbble" className="bg-gray-200 hover:bg-blue-400 text-gray-700 rounded-full p-3 text-xl transition-colors"><FaLinkedinIn /></a>
-            <a href="#" aria-label="Facebook" className="bg-gray-200 hover:bg-blue-600 text-gray-700 rounded-full p-3 text-xl transition-colors"><FaFacebookF /></a>
-            <a href={insta} aria-label="Google Plus" className="bg-gray-200 hover:bg-pink-500 text-gray-700 rounded-full p-3 text-xl transition-colors"><FaInstagram /></a>
+            <a href={linkedin} aria-label="Dribbble" className="bg-gray-700 hover:bg-blue-400 text-white rounded-full p-3 text-xl transition-colors"><FaLinkedinIn /></a>
+            <a href="#" aria-label="Facebook" className="bg-gray-700 hover:bg-blue-600 text-white rounded-full p-3 text-xl transition-colors"><FaFacebookF /></a>
+            <a href={insta} aria-label="Google Plus" className="bg-gray-700 hover:bg-pink-500 text-white rounded-full p-3 text-xl transition-colors"><FaInstagram /></a>
         </div>
     </div>
 );
