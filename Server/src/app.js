@@ -8,8 +8,13 @@ const app = express();
 
 // const cors = require("cors");
 
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://frontend-url.onrender.com"
+];
+
 app.use(cors({
-  origin: "http://localhost:5173", // the frontend URL
+  origin: allowedOrigins,
   credentials: true
 }));
 app.use(express.json());
