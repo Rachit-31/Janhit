@@ -11,9 +11,9 @@ const Footer: React.FC = () => {
                     {/* Logo */}
                     <div className="md:col-span-4">
                         <a href="/" className="text-white text-3xl font-bold">
-                            CivicConnect
+                            Janhit
                         </a>
-                        <p className="text-sm text-gray-300 mt-2">Your City, Your Voice — आपकी आवाज़, आपकी पहचान</p>
+                        <p className="text-sm text-gray-300 mt-2">Your City, Your Voice — आपका शहर, आपकी आवाज़</p>
                     </div>
 
                     {/* Quick Links */}
@@ -77,7 +77,7 @@ const Footer: React.FC = () => {
                 {/* Bottom */}
                 <div className="border-t border-gray-700 pt-6 flex flex-col md:flex-row md:justify-between">
                     <p className="text-sm text-gray-400">
-                        © 2025 CivicConnect. All rights reserved.
+                        © 2025 Janhit. All rights reserved.
                     </p>
                     <div className="flex gap-4 text-sm text-gray-400 mt-2 md:mt-0">
                         <a href="#" className="hover:text-white">Privacy Policy</a>
