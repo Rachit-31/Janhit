@@ -1,5 +1,5 @@
-import React, { createElement, useEffect, useState } from 'react';
-import { toast, Toaster } from 'react-hot-toast';
+import React, { useEffect, useState } from 'react';
+import { toast } from 'react-hot-toast';
 import noresults from '../assets/noresults.jpg'
 import {
     MapContainer,
@@ -216,8 +216,8 @@ const MapPage: React.FC = () => {
             toast.error("User not found. Please log in.");
             return;
         }
-
-        const confirmToast = toast(
+    
+        toast(
             (t) => (
                 <div>
                     <p>Are you sure you want to delete this issue?</p>
@@ -244,6 +244,7 @@ const MapPage: React.FC = () => {
             }
         );
     };
+    
 
     const handleConfirmDelete = async (toastId: string, problemId: string, userId: string) => {
         try {
