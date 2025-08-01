@@ -9,14 +9,8 @@ This is a MERN stack-based Civic Engagement Portal that allows local residents t
 - **Issue management**: Municipality and government officials can view and resolve reported problems.
 - **Comment and rating system**: Users can add comments, and track their status.
 
----
 
-## Demo
 
-### Video Demonstration
-Here's a demo video showing the functionality of the Civic Engagement Portal:
-
-[![Watch the video](https://img.youtube.com/vi/VIDEO_ID/maxresdefault.jpg)](https://www.youtube.com/watch?v=VIDEO_ID)
 
 
 ---
