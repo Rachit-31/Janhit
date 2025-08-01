@@ -3,6 +3,9 @@
 ## Overview
 This is a MERN stack-based Civic Engagement Portal that allows local residents to report civic issues, vote on them, and track their resolution. It uses a map-based interface for real-time issue tracking, allowing users to easily raise and resolve local problems.
 
+### Problem Statement:
+In many communities, residents struggle to report civic issues like potholes, broken streetlights, or garbage dumps due to the lack of a centralized, transparent platform. Often, these problems go unnoticed by authorities or unresolved for long periods, causing frustration among citizens and inefficiencies in local governance. There is a need for a system that allows easy reporting, prioritization based on public input, and accountability in issue resolution.
+
 ### Features:
 - **Map-based reporting**: Users can drop pins on the map to report problems.
 - **Voting system**: Other users can can give severity rating on reported problems to prioritize them. If severity is greater than  or equal to 3 then vote is count of that problem
@@ -15,7 +18,7 @@ This is a MERN stack-based Civic Engagement Portal that allows local residents t
 
 ---
 
-### Preview Image
+### Preview Image:
 ![image](https://github.com/user-attachments/assets/c76bc122-98c4-4adf-9502-d47b2ee9e2b3)
 ![image](https://github.com/user-attachments/assets/2369af92-03aa-4c2b-9574-96d1a662fdf8)
 ![image](https://github.com/user-attachments/assets/fa27ddcd-0081-42f3-87b6-d2a924cd4e83)
@@ -25,7 +28,7 @@ This is a MERN stack-based Civic Engagement Portal that allows local residents t
 
 ---
 
-## Technologies Used:
+## Technologies Used
 - **Frontend**: React, TypeScript, Leaflet (for maps)
 - **Backend**: Node.js, Express
 - **Database**: MongoDB
