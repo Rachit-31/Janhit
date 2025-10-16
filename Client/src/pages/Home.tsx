@@ -29,7 +29,7 @@ const CtaBanner: React.FC = () => (
               Ready to Transform Your Community?
             </h2>
             <p className="text-lg text-white/80 max-w-xl">
-              Join thousands of citizens, officials, and organizations using JanSetu's comprehensive platform for civic engagement, community building, and disaster relief.
+              Join thousands of citizens, officials, and organizations using Janhit's comprehensive platform for civic engagement, community building, and disaster relief.
             </p>
           </div>
           <div className="flex flex-col sm:flex-row gap-4">

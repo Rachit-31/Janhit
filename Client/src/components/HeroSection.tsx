@@ -13,7 +13,7 @@ const modules = [
         title: "Community Social Feed",
         description: "Connect with neighbors, share local stories, discover events, and build stronger community bonds",
         path: "/feed",
-        code: "jansetu/community-feed",
+        code: "Janhit/community-feed",
         color: "green",
         stats: "25K+ Posts Shared"
     },
@@ -22,7 +22,7 @@ const modules = [
         title: "Disaster Relief Fundraising",
         description: "Support disaster relief efforts through secure crowdfunding campaigns with transparent fund tracking",
         path: "/disaster-fundraising",
-        code: "jansetu/disaster-relief",
+        code: "Janhit/disaster-relief",
         color: "red",
         stats: "₹2.5Cr+ Raised"
     },
@@ -31,7 +31,7 @@ const modules = [
         title: "Civic Issue Reporting",
         description: "Report and track civic problems with interactive maps, real-time updates, and direct communication with authorities",
         path: "/map",
-        code: "jansetu/civic-reporting",
+        code: "Janhit/civic-reporting",
         color: "blue",
         stats: "10K+ Issues Resolved"
     }
@@ -68,7 +68,7 @@ const HeroSection: React.FC = () => {
                         transition={{ duration: 0.6, delay: 0.2 }}
                         className="text-lg sm:text-xl text-[#666666] max-w-4xl mx-auto"
                     >
-                        JanSetu is a comprehensive ecosystem connecting citizens, officials, and communities. 
+                        Janhit is a comprehensive ecosystem connecting citizens, officials, and communities. 
                         Report civic issues, engage in social feeds, support disaster relief, and build stronger communities together.
                     </motion.p>
                 </div>

@@ -1,4 +1,4 @@
-# JanSetu - Smart Governance Platform
+# Janhit - Smart Governance Platform
 
 ## Setup Instructions
 
@@ -12,7 +12,7 @@
 1. **Clone the repository**
    ```bash
    git clone <repository-url>
-   cd JanSetu
+   cd Janhit
    ```
 
 2. **Install dependencies**
@@ -30,7 +30,7 @@
    - In the `Server` directory, ensure the `env` file exists with the following variables:
      ```
      PORT=8000
-     MONGODB_URI=mongodb://localhost:27017/jansetu
+     MONGODB_URI=mongodb://localhost:27017/Janhit
      ACCESS_TOKEN_SECRET=your_jwt_secret_key_here_change_in_production
      CORS=http://localhost:5173
      ```
@@ -145,7 +145,7 @@
 
 ### Project Structure
 ```
-JanSetu/
+Janhit/
 ├── Client/          # React frontend
 │   ├── src/
 │   │   ├── components/

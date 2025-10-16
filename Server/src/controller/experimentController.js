@@ -9,7 +9,7 @@ export const getButtonText = async (req, res) => {
       id: userId || 'anonymous',
     };
 
-    const flagData = await vwoService.getFeatureFlag('kaustubhJanSetu', userContext);
+    const flagData = await vwoService.getFeatureFlag('kaustubhJanhit', userContext);
     console.log(' VWO Flag data:', flagData);
     
     const finalButtonText = 'Complaint kardo yaar';
@@ -18,7 +18,7 @@ export const getButtonText = async (req, res) => {
       buttonText: finalButtonText,
       isEnabled: flagData.isEnabled,
       variables: flagData.variables,
-      experimentKey: 'kaustubhJanSetu'
+      experimentKey: 'kaustubhJanhit'
     });
   } catch (error) {
     console.error('Error getting button text:', error);
@@ -42,7 +42,7 @@ export const trackButtonClick = async (req, res) => {
     };
 
     // Track the conversion event
-    vwoService.trackConversion('kaustubhJanSetu', userContext);
+    vwoService.trackConversion('kaustubhJanhit', userContext);
     
     console.log('✅ Conversion tracked successfully for user:', userId);
     
@@ -51,7 +51,7 @@ export const trackButtonClick = async (req, res) => {
       buttonText: buttonText || 'Report an issue',
       userId: userId,
       timestamp: new Date().toISOString(),
-      experimentKey: 'kaustubhJanSetu'
+      experimentKey: 'kaustubhJanhit'
     });
   } catch (error) {
     console.error('❌ Error tracking button click:', error);

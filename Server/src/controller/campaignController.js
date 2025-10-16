@@ -24,7 +24,7 @@ const uploadToCloudinary = async (file, folder = 'campaigns') => {
     return new Promise((resolve, reject) => {
         const uploadStream = cloudinary.uploader.upload_stream(
             {
-                folder: `jansetu/${folder}`,
+                folder: `Janhit/${folder}`,
                 resource_type: 'auto',
                 quality: 'auto:good',
                 fetch_format: 'auto'

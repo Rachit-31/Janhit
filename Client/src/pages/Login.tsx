@@ -81,7 +81,7 @@ const Login: React.FC = () => {
               transition={{ duration: 0.6, delay: 0.3 }}
               className="text-blue-100"
             >
-              Sign in to continue to JanSetu
+              Sign in to continue to Janhit
             </motion.p>
           </div>
 

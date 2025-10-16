@@ -77,7 +77,7 @@ const ModulesSection: React.FC = () => {
                         transition={{ duration: 0.6, delay: 0.2 }}
                         className="text-gray-600 text-lg max-w-3xl mx-auto"
                     >
-                        JanSetu brings together civic reporting, community engagement, and disaster relief 
+                        Janhit brings together civic reporting, community engagement, and disaster relief 
                         in one comprehensive platform designed for modern digital governance.
                     </motion.p>
                 </div>
@@ -160,7 +160,7 @@ const ModulesSection: React.FC = () => {
                             Ready to Transform Your Community?
                         </h3>
                         <p className="text-blue-100 mb-6 max-w-2xl mx-auto">
-                            Join thousands of citizens, officials, and organizations using JanSetu to build smarter, more connected communities.
+                            Join thousands of citizens, officials, and organizations using Janhit to build smarter, more connected communities.
                         </p>
                         <div className="flex flex-col sm:flex-row gap-4 justify-center">
                             <Link

@@ -10,7 +10,7 @@ interface I18nContextValue {
 
 const translations: Record<LanguageCode, Record<string, string>> = {
     en: {
-        app_name: 'JanSetu',
+        app_name: 'Janhit',
         report_issue: 'Report an issue',
         my_complaints: 'My Complaints',
         contact_us: 'Contact Us',

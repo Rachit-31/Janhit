@@ -9,28 +9,28 @@ const features = [
         title: "Report & Track Issues",
         description: "Take photos, mark location, and describe civic problems. Monitor resolution progress on interactive maps with real-time updates.",
         path: "/map",
-        code: "jansetu/civic-reporting"
+        code: "Janhit/civic-reporting"
     },
     {
         icon: Users,
         title: "Connect & Engage",
         description: "Join community discussions, share local stories, and discover neighborhood events through our social feed platform.",
         path: "/feed",
-        code: "jansetu/community-feed"
+        code: "Janhit/community-feed"
     },
     {
         icon: Heart,
         title: "Support Relief Efforts",
         description: "Contribute to verified disaster relief campaigns and track the impact of your donations in real-time.",
         path: "/disaster-fundraising",
-        code: "jansetu/disaster-relief"
+        code: "Janhit/disaster-relief"
     },
     {
         icon: Shield,
         title: "Manage & Resolve",
         description: "Officials can efficiently assign, track, and resolve issues while citizens receive notifications at every step.",
         path: "/officialsDashboard",
-        code: "jansetu/official-portal"
+        code: "Janhit/official-portal"
     }
 ];
 
@@ -65,7 +65,7 @@ const HowItWorksSection: React.FC = () => {
                         transition={{ duration: 0.6, delay: 0.2 }}
                         className="text-gray-600 text-lg max-w-3xl mx-auto"
                     >
-                        Whether you're a citizen, official, or community leader, JanSetu provides the tools you need to create positive change in your community.
+                        Whether you're a citizen, official, or community leader, Janhit provides the tools you need to create positive change in your community.
                     </motion.p>
                 </div>
 

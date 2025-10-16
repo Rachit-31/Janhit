@@ -112,8 +112,8 @@ class VWOService {
       try {
         result = this.vwoClient.trackEvent('e1', userContext);
       } catch (e1Error) {
-        console.log('🔄 Event e1 failed, trying jansetu-navbar-buttonClick...');
-        result = this.vwoClient.trackEvent('jansetu-navbar-buttonClick', userContext);
+        console.log('🔄 Event e1 failed, trying Janhit-navbar-buttonClick...');
+        result = this.vwoClient.trackEvent('Janhit-navbar-buttonClick', userContext);
       }
       
       console.log('✅ VWO Event e1 tracked successfully for user:', userContext.id);
@@ -128,7 +128,7 @@ class VWOService {
       // Try alternative event names that might be configured
       console.log('🔄 Trying alternative event names...');
       try {
-        const altResult = this.vwoClient.trackEvent('jansetu-navbar-buttonClick', userContext);
+        const altResult = this.vwoClient.trackEvent('Janhit-navbar-buttonClick', userContext);
         console.log('✅ Alternative event tracked:', altResult);
         return altResult;
       } catch (altError) {
