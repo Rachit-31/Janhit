@@ -1,113 +1,171 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from "react";
+import { FaHome, FaListAlt } from "react-icons/fa";
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import { API } from '../ApiUri';
-import { FaHome, FaListAlt} from "react-icons/fa";
-import noissue from '../assets/noIssues1.png'
+import toast from 'react-hot-toast';
 
-interface User {
-  _id: string;
-  name: string;
-  email: string;
-  phone: string;
-  location: {
-    type: string;
-    coordinates: [number, number];
-  };
-  createdAt: string;
-}
-
-interface Issue {
-  _id: string;
-  title: string;
-  description: string;
-  category: string;
-  location: {
-    type: string;
-    coordinates: [number, number];
-  };
-  status: string;
-  createdBy: string;
-  assignedTo: string | null;
-  voteCount: number;
-  averageRating: number;
-  createdAt: string;
-}
 
 const DashboardUser: React.FC = () => {
-  const [user, setUser] = useState<User | null>(null);
+  const [activeSection, setActiveSection] = useState<"account" | "issues">("account");
   const [loading, setLoading] = useState(true);
-  const [issues, setIssues] = useState<Issue[]>([]);
-  const [activeSection, setActiveSection] = useState("account");  // 👈 move this UP here
-  
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        const response = await axios.get(`${API}/getUser`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        setUser(response.data);
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const [saving, setSaving] = useState(false);
+  const navigate = useNavigate();
 
-    fetchUser();
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    location: "",
+    address: ""
+  });
+
+  const [issues] = useState([
+    { id: 1, title: "Pothole on Main Road", status: "Pending" },
+    { id: 2, title: "Streetlight not working", status: "Assigned" },
+    { id: 3, title: "Garbage collection delayed", status: "Resolved" },
+  ]);
+
+  useEffect(() => {
+    fetchUserProfile();
   }, []);
 
-  useEffect(() => {
-    const fetchIssues = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        const response = await axios.get(`${API}/getUserIssues`, {
-          headers: {
-            Authorization: `Bearer ${token}`
-          },
-        });
-        setIssues(response.data);
-      } catch (error) {
-        console.error("Error fetching all the issues:", error);
+  const fetchUserProfile = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const userId = localStorage.getItem('id');
+
+      if (!token || !userId) {
+        toast.error('Please login to view your profile');
+        navigate('/login');
+        return;
       }
-    };
 
-    fetchIssues();
-  }, []);
+      const response = await axios.get(`${API}/userProfile/${userId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
 
-  useEffect(() => {
-    console.log('This is the issues:', issues);
-  }, [issues]);
-  
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "pending":
-        return "text-yellow-500";
-      case "under_review":
-        return "text-blue-500";
-      case "assigned":
-        return "text-purple-500";
-      case "resolved":
-        return "text-green-500";
-      default:
-        return "text-gray-500";
+      if (response.data.success) {
+        const user = response.data.user;
+        setFormData({
+          name: user.name || "",
+          email: user.email || "",
+          phone: user.phone || "",
+          location: user.location?.coordinates ? `${user.location.coordinates[1]}, ${user.location.coordinates[0]}` : "",
+          address: user.address || ""
+        });
+      } else {
+        toast.error('Failed to fetch user profile');
+      }
+    } catch (error: any) {
+      console.error('Error fetching user profile:', error);
+      if (error.response?.status === 401) {
+        toast.error('Session expired. Please login again');
+        navigate('/login');
+      } else {
+        toast.error('Failed to fetch user profile');
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleSubmit = async () => { };
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSaving(true);
+
+    try {
+      const token = localStorage.getItem('token');
+      const userId = localStorage.getItem('id');
+
+      if (!token || !userId) {
+        toast.error('Please login to update your profile');
+        return;
+      }
+
+      // Parse location coordinates
+      let locationData = null;
+      if (formData.location) {
+        const coords = formData.location.split(',').map(coord => parseFloat(coord.trim()));
+        if (coords.length === 2 && !isNaN(coords[0]) && !isNaN(coords[1])) {
+          locationData = {
+            type: 'Point',
+            coordinates: [coords[1], coords[0]] // longitude, latitude
+          };
+        }
+      }
+
+      const updateData = {
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        location: locationData,
+        address: formData.address
+      };
+
+      const response = await axios.put(`${API}/updateUserProfile/${userId}`, updateData, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      if (response.data.success) {
+        toast.success('Profile updated successfully');
+      } else {
+        toast.error('Failed to update profile');
+      }
+    } catch (error: any) {
+      console.error('Error updating profile:', error);
+      if (error.response?.data?.message) {
+        toast.error(error.response.data.message);
+      } else {
+        toast.error('Failed to update profile');
+      }
+    } finally {
+      setSaving(false);
+    }
+  };
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="text-lg font-medium text-gray-600 animate-pulse">Loading user info...</div>
+      <div className="flex flex-col md:flex-row min-h-screen bg-gray-50">
+        <div className="w-full md:w-64 bg-white shadow-sm p-4">
+          <div className="mb-8">
+            <h2 className="text-xs font-semibold text-gray-500 mb-4">MENU</h2>
+            <div className="space-y-2">
+              <div className="flex items-center p-2 rounded-md">
+                <div className="w-6 h-6 flex items-center justify-center mr-3 text-gray-500">
+                  <FaHome size={16} />
+                </div>
+                <span className="text-gray-600">Account</span>
+              </div>
+              <div className="flex items-center p-2 rounded-md">
+                <div className="w-6 h-6 flex items-center justify-center mr-3 text-gray-500">
+                  <FaListAlt size={16} />
+                </div>
+                <span className="text-gray-600">All Issues</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div className="flex-1 p-4 md:p-8">
+          <div className="max-w-3xl mx-auto">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto"></div>
+              <p className="mt-4 text-gray-600">Loading your profile...</p>
+            </div>
+          </div>
+        </div>
       </div>
     );
-  }
-
-  if (!user) {
-    return <div className="text-center text-red-500 mt-10">User data could not be loaded.</div>;
   }
 
   return (
@@ -159,6 +217,8 @@ const DashboardUser: React.FC = () => {
                     />
                   </div>
                 </div>
+                <h1 className="text-2xl font-bold text-gray-900">{formData.name}</h1>
+                <p className="text-gray-600">{formData.email}</p>
               </div>
 
               <form onSubmit={handleSubmit}>
@@ -170,8 +230,10 @@ const DashboardUser: React.FC = () => {
                       <input
                         type="text"
                         name="name"
-                        value={user.name}
+                        value={formData.name}
+                        onChange={handleChange}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                        required
                       />
                     </div>
                     <div>
@@ -179,18 +241,21 @@ const DashboardUser: React.FC = () => {
                       <input
                         type="email"
                         name="email"
-                        value={user.email}
+                        value={formData.email}
+                        onChange={handleChange}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                        required
                       />
                     </div>
                   </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Aadhaar Number</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
                       <input
                         type="text"
                         name="phone"
-                        value={user.phone}
+                        value={formData.phone}
+                        onChange={handleChange}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md"
                       />
                     </div>
@@ -199,11 +264,37 @@ const DashboardUser: React.FC = () => {
                       <input
                         type="text"
                         name="location"
-                        value={String(user.location.coordinates)}
+                        value={formData.location}
+                        onChange={handleChange}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                        placeholder="e.g., 28.7041, 77.1025"
                       />
                     </div>
                   </div>
+                  <div className="mb-6">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Address (Optional)</label>
+                    <input
+                      type="text"
+                      name="address"
+                      value={formData.address}
+                      onChange={handleChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                      placeholder="Enter your address"
+                    />
+                  </div>
+                </div>
+                <div className="mt-6">
+                  <button
+                    type="submit"
+                    disabled={saving}
+                    className={`px-6 py-2 font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 ${
+                      saving 
+                        ? 'bg-gray-400 cursor-not-allowed' 
+                        : 'bg-purple-600 text-white hover:bg-purple-700'
+                    }`}
+                  >
+                    {saving ? 'Saving...' : 'Save Changes'}
+                  </button>
                 </div>
               </form>
             </div>
@@ -214,19 +305,14 @@ const DashboardUser: React.FC = () => {
               <h2 className="text-lg font-medium mb-6">Your Issues</h2>
               <div className="bg-white rounded-lg shadow-sm p-6">
                 {issues.length > 0 ? (
-                  issues.map((issue, idx) => (
-                    <div key={idx} className="border-b border-gray-200 py-2">
+                  issues.map(issue => (
+                    <div key={issue.id} className="border-b border-gray-200 py-2">
                       <p className="font-medium">{issue.title}</p>
-                      <p className='text-sm text-gray-500'>{issue.description}</p>
-                      <span className='text-sm text-gray-600 pr-[1%]'>Status:</span>
-                      <span className={`text-sm text-gray-600 ${getStatusColor(issue.status)}`}>{issue.status}</span> 
+                      <p className="text-sm text-gray-600">Status: {issue.status}</p>
                     </div>
                   ))
                 ) : (
-                  <div className='flex flex-col items-center'>
-                    <img src={noissue} className='opacity-50 md:w-[25%] w-[50%]' alt="" />
-                    <p className="text-gray-500 font-mono">You have no issues</p>
-                  </div>
+                  <p className="text-gray-500">No issues found.</p>
                 )}
               </div>
             </div>

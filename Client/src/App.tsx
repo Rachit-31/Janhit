@@ -10,6 +10,11 @@ import DashboardUser from './pages/DashboardUser';
 import DashboardOfficer from './pages/DashboardOfficer';
 import Officials from './pages/Officials';
 import MyTeam from './pages/MyTeam';
+import MyComplaints from './pages/MyComplaints';
+import Feed from './pages/Feed';
+import DisasterFundraising from './pages/DisasterFundraising';
+import AdminLogin from './pages/AdminLogin';
+import AdminDashboard from './pages/AdminDashboard';
 import ProtectedRoute from './ProtectedRoute';
 
 
@@ -96,7 +101,36 @@ function App() {
               </MainLayout>
             }
           />
-        </Route>
+                  <Route
+          path="/mycomplaints"
+          element={
+            <MainLayout>
+              <MyComplaints />
+            </MainLayout>
+          }
+        />
+        <Route
+          path="/feed"
+          element={
+            <MainLayout>
+              <Feed />
+            </MainLayout>
+          }
+        />
+
+        <Route
+          path="/disaster-fundraising"
+          element={
+            <MainLayout>
+              <DisasterFundraising />
+            </MainLayout>
+          }
+        />
+      </Route>
+
+      {/* Admin Routes */}
+      <Route path="/admin/login" element={<AdminLogin />} />
+      <Route path="/admin/dashboard" element={<AdminDashboard />} />
 
 
       </Routes>
