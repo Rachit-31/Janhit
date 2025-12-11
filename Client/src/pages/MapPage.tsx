@@ -171,36 +171,64 @@ const MapPage: React.FC = () => {
     const [mediaFiles, setMediaFiles] = useState<FileList | null>(null);
     const [similar, setSimilar] = useState<any[]>([]);
 
+    // useEffect(() => {
+    //     navigator.geolocation.getCurrentPosition(
+    //         async (pos) => {
+    //             const currentPos: [number, number] = [pos.coords.latitude, pos.coords.longitude];
+    //             setPosition(currentPos);
+
+    //             try {
+    //                 const response = await axios.get(`${API}/getAllproblems`);
+
+    //                 const fetchedIssues = response.data.problems.map((item: any) => ({
+    //                     id: item._id,
+    //                     position: [item.location.coordinates[1], item.location.coordinates[0]],
+    //                     description: item.description,
+    //                     severity: item.averageRating || 1,
+    //                     createdBy: item.createdBy,
+    //                     comments: [],
+    //                     address: item.address,
+    //                     media: item.media || [],
+    //                 }));
+    //                 setIssues(fetchedIssues);
+    //             } catch (error) {
+    //                 console.error("Error fetching issues:", error);
+    //             }
+    //         },
+    //         (err) => {
+    //             console.error(err);
+    //             setPosition([28.6139, 77.2090]);
+    //         }
+    //     );
+    // }, []);
+
     useEffect(() => {
-        navigator.geolocation.getCurrentPosition(
-            async (pos) => {
-                const currentPos: [number, number] = [pos.coords.latitude, pos.coords.longitude];
-                setPosition(currentPos);
+    const currentPos: [number, number] = [31.481124, 76.190682]; // IIIT Una coordinates
+    setPosition(currentPos);
 
-                try {
-                    const response = await axios.get(`${API}/getAllproblems`);
+    const fetchIssues = async () => {
+        try {
+            const response = await axios.get(`${API}/getAllproblems`);
 
-                    const fetchedIssues = response.data.problems.map((item: any) => ({
-                        id: item._id,
-                        position: [item.location.coordinates[1], item.location.coordinates[0]],
-                        description: item.description,
-                        severity: item.averageRating || 1,
-                        createdBy: item.createdBy,
-                        comments: [],
-                        address: item.address,
-                        media: item.media || [],
-                    }));
-                    setIssues(fetchedIssues);
-                } catch (error) {
-                    console.error("Error fetching issues:", error);
-                }
-            },
-            (err) => {
-                console.error(err);
-                setPosition([28.6139, 77.2090]);
-            }
-        );
-    }, []);
+            const fetchedIssues = response.data.problems.map((item: any) => ({
+                id: item._id,
+                position: [item.location.coordinates[1], item.location.coordinates[0]],
+                description: item.description,
+                severity: item.averageRating || 1,
+                createdBy: item.createdBy,
+                comments: [],
+                address: item.address,
+                media: item.media || [],
+            }));
+            setIssues(fetchedIssues);
+        } catch (error) {
+            console.error("Error fetching issues:", error);
+        }
+    };
+
+    fetchIssues();
+}, []);
+
 
     // Clustering algorithm for heatmap
     const clusterIssues = (issues: Issue[], clusterRadius: number = 0.001) => {
