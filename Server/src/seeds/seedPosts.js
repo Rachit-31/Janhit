@@ -3,10 +3,10 @@ import Post from '../models/postModel.js';
 import User from '../models/userModel.js';
 import dotenv from 'dotenv';
 
-// Load environment variables
+
 dotenv.config({ path: './env' });
 
-// Dummy flood posts data
+
 const floodPosts = [
   {
     title: "Severe Flooding in Chennai - Marina Beach Area Submerged",
@@ -154,7 +154,6 @@ const floodPosts = [
   }
 ];
 
-// Create default admin user for posts
 const createDefaultUser = async () => {
   try {
     let defaultUser = await User.findOne({ email: 'system@Janhit.com' });
@@ -163,10 +162,10 @@ const createDefaultUser = async () => {
       defaultUser = new User({
         name: 'Janhit News Team',
         email: 'system@Janhit.com',
-        password: 'systemuser123', // This would be hashed in real implementation
+        password: 'systemuser123', 
         location: {
           type: 'Point',
-          coordinates: [77.2090, 28.7041] // Delhi coordinates
+          coordinates: [77.2090, 28.7041] 
         },
         address: 'New Delhi, India'
       });
@@ -181,12 +180,12 @@ const createDefaultUser = async () => {
   }
 };
 
-// Seed flood posts
+
 export const seedFloodPosts = async () => {
   try {
     console.log('🌊 Starting flood posts seeding...');
 
-    // Check if posts already exist
+    
     const existingPostsCount = await Post.countDocuments({ isActive: true });
     
     if (existingPostsCount > 0) {
@@ -198,15 +197,14 @@ export const seedFloodPosts = async () => {
       };
     }
 
-    // Create default user
     const defaultUser = await createDefaultUser();
 
-    // Create flood posts
+
     const createdPosts = [];
     
     for (const postData of floodPosts) {
       try {
-        // Add some randomness to creation dates (last 7 days)
+  
         const randomDaysAgo = Math.floor(Math.random() * 7);
         const createdAt = new Date();
         createdAt.setDate(createdAt.getDate() - randomDaysAgo);
@@ -226,19 +224,19 @@ export const seedFloodPosts = async () => {
           images: postData.images,
           createdAt: createdAt,
           updatedAt: createdAt,
-          // Add some random engagement to make it look realistic
+     
           likesCount: Math.floor(Math.random() * 50) + 10,
           commentsCount: Math.floor(Math.random() * 20) + 2,
           sharesCount: Math.floor(Math.random() * 15) + 1,
           viewsCount: Math.floor(Math.random() * 200) + 50
         });
 
-        // Add some random likes
+        
         const likeCount = post.likesCount;
         for (let i = 0; i < likeCount; i++) {
           post.likes.push({
             user: defaultUser._id,
-            createdAt: new Date(createdAt.getTime() + Math.random() * 86400000) // Random time after post creation
+            createdAt: new Date(createdAt.getTime() + Math.random() * 86400000) 
           });
         }
 
@@ -254,7 +252,7 @@ export const seedFloodPosts = async () => {
           "Avoid traveling unless absolutely necessary."
         ];
 
-        const commentCount = Math.min(post.commentsCount, 5); // Limit to 5 comments max
+        const commentCount = Math.min(post.commentsCount, 5); 
         for (let i = 0; i < commentCount; i++) {
           post.comments.push({
             user: defaultUser._id,
@@ -288,7 +286,6 @@ export const seedFloodPosts = async () => {
   }
 };
 
-// Function to clear all posts (for testing)
 export const clearAllPosts = async () => {
   try {
     const result = await Post.deleteMany({});
@@ -301,10 +298,9 @@ export const clearAllPosts = async () => {
   }
 };
 
-// Auto-seed function that can be called from the main app
 export const autoSeedIfEmpty = async () => {
   try {
-    // Connect to MongoDB if not already connected
+    
     if (mongoose.connection.readyState === 0) {
       await mongoose.connect(process.env.MONGODB_URI);
     }
@@ -321,7 +317,7 @@ export const autoSeedIfEmpty = async () => {
   }
 };
 
-// CLI execution
+
 if (import.meta.url === `file://${process.argv[1]}`) {
   const connectDB = async () => {
     try {
@@ -336,7 +332,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   const main = async () => {
     await connectDB();
     
-    // Check command line arguments
+  
     const args = process.argv.slice(2);
     
     if (args.includes('--clear')) {

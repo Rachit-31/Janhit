@@ -2,7 +2,6 @@ import { Router } from "express";
 import { verifyJWT } from "../middlewares/authMiddleware.js";
 import { addCommentToProblem, deleteComment, getCommentsForProblem, loginUser, logout, signupUser, getUserProfile, updateUserProfile } from "../controller/userController.js";
 import { assignProblem, createProblem, deleteProblem, getAllProblems, getOfficialProblems, rateProblem, getUserComplaints, findSimilarProblems, updateProblemStatusByOfficial } from "../controller/problemController.js";
-import { getButtonText, trackButtonClick } from "../controller/experimentController.js";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
@@ -56,8 +55,5 @@ router.route("/loginOfficial").post(loginOfficial)
 router.route("/getProblemOfficial").get(verifyJWT, getOfficialProblems);
 router.route("/problems/:problemId/official/status").put(verifyJWT, updateProblemStatusByOfficial);
 
-// VWO experiments
-router.route("/experiment/button/:userId").get(getButtonText);
-router.route("/experiment/track-click/:userId").post(trackButtonClick);
 
 export default router;
