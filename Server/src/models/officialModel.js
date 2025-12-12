@@ -18,7 +18,7 @@ const officialSchema = new mongoose.Schema({
   },
 
   department: {
-    type: String // e.g., "Roadworks", "Sanitation", etc.
+    type: String 
   },
 
   assignedProblems: [{

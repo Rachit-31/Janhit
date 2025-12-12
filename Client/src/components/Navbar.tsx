@@ -65,20 +65,20 @@ const Navbar: React.FC = () => {
               >
                 Community Feed
               </Link>
-              <Link 
+              {/* <Link 
                 to="/disaster-fundraising" 
                 className="text-gray-700 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-colors"
               >
                 🤝 Disaster Relief
-              </Link>
-              {isLoggedIn && (
+              </Link> */}
+              {/* {isLoggedIn && (
                 <Link 
                   to="/mycomplaints" 
                   className="text-gray-700 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-colors"
                 >
                   My Complaints
                 </Link>
-              )}
+              )} */}
               <Link 
                 to="/officials" 
                 className="text-gray-700 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-colors"
